@@ -41,7 +41,7 @@ de-identified and obscured data for demonstration purposes.
 
 There are several ways:
 
-- Download latest Release from [MATLAB File Exchange]()
+- Download latest Release from [MATLAB File Exchange](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
 - Download latest Release from [GitHub](https://github.com/teasit/mftyre-matlab-tool/releases)
 - Clone using Git and integrate into your projects using a [Project Reference](https://de.mathworks.com/help/simulink/ug/add-or-remove-a-reference-to-another-project.html)
 
