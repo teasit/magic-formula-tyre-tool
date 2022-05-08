@@ -1,5 +1,7 @@
 # MF-Tyre Tool MATLAB
 
+[![View MFTyreTool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
+
 ![Screenshot Analysis Tab with Plots](/doc/img/MFTyreTool_Screenshot_Plot.png)
 
 - Interactively fit MF-Tyre models to data

@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="4044445016" file="C:\workspace\mftyre-matlab-tool\MFTyreToolApp.prj" location="C:\workspace\mftyre-matlab-tool" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3463885179" file="C:\workspace\mftyre-matlab-too-new\MFTyreToolApp.prj" location="C:\workspace\mftyre-matlab-too-new" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
     <param.appname>MFTyreToolApp</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -92,7 +92,7 @@
     <fileset.resources />
     <fileset.package />
     <build-deliverables>
-      <file location="C:\workspace" name="mftyre-matlab-tool" optional="false">C:\workspace\mftyre-matlab-tool</file>
+      <file location="C:\workspace" name="mftyre-matlab-too-new" optional="false">C:\workspace\mftyre-matlab-too-new</file>
     </build-deliverables>
     <workflow />
     <matlab>
