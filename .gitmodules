@@ -1,0 +1,3 @@
+[submodule "src/mftyre-matlab-library"]
+	path = src/mftyre-matlab-library
+	url = git@github.com:teasit/mftyre-matlab-library.git

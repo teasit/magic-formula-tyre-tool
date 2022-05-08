@@ -1,0 +1,9 @@
+{
+    "Name": "MFTyreTool",
+    "Version": "1.0.0",
+    "Authors": [
+        "Tom Teasdale"
+    ],
+    "Source": "github.com/teasit/mftyre-matlab-tool",
+    "Contact": "teasdale@lightsaber.red"
+}
