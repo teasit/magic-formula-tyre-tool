@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2254491555" file="C:\workspace\mftyre-matlab-tool\MFTyreToolApp.prj" location="C:\workspace\mftyre-matlab-tool" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2408865852" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
     <param.appname>MFTyreToolApp</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -27,6 +27,8 @@
     <param.output>${PROJECT_ROOT}</param.output>
     <param.guid>25bcb2d7-69d2-4790-a114-9349ec5e2889</param.guid>
     <unset>
+      <param.authnamewatermark />
+      <param.email />
       <param.company />
       <param.description />
       <param.platforms />
@@ -94,7 +96,7 @@
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="C:\workspace" name="mftyre-matlab-tool" optional="false">C:\workspace\mftyre-matlab-tool</file>
+      <file location="C:\Users\Tom\Documents" name="mftyre-tool-matlab" optional="false">C:\Users\Tom\Documents\mftyre-tool-matlab</file>
     </build-deliverables>
     <workflow />
     <matlab>
