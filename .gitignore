@@ -1,3 +1,5 @@
 MFTyreToolApp_resources/
 sandbox/
 *.asv
+*.mltbx
+*.mlappinstall

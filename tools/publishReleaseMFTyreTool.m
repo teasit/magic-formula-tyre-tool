@@ -1,11 +1,12 @@
-function publishReleaseMFTyreTool(version, title, changelogFile, packageFile, packagerFile)
+function publishReleaseMFTyreTool(version, title, changelogFile, packageFile, packagerFile, packagerToolboxFile)
 %PUBLISHRELEASEMFTYRETOOL Automatic release to GitHub
 arguments
-    version char = getVersionFromAboutJSON
+    version char = getVersionFromAboutJSON()
     title char = char.empty
     changelogFile char {mustBeFile} = 'CHANGELOG.md'
-    packageFile char = 'MFTyreToolApp.mlappinstall'
+    packageFile char = 'MFTyreTool.mltbx'
     packagerFile char = 'MFTyreToolApp.prj'
+    packagerToolboxFile char = 'MFTyreToolToolboxPackager.prj'
 end
 pattern = 'v' + digitsPattern() + '.' + digitsPattern() + '.' + digitsPattern();
 versionInvalid = ~matches(version, pattern);
@@ -13,13 +14,18 @@ if versionInvalid
     error('Invalid version pattern. Example: v1.0.1')
 end
 
-%Not needed, as version is synced with latest GitHub release
-% updateVersionPackager(packagerFile, version)
+updateVersionPackager(packagerFile, version)
 matlab.apputil.package(packagerFile)
+matlab.addons.toolbox.toolboxVersion(packagerToolboxFile, erase(version, 'v'));
+matlab.addons.toolbox.packageToolbox(packagerToolboxFile);
 
 if isempty(title)
     title = version;
 end
+
+system('git add *')
+system(sprintf('git commit -m "publish release %s"', version))
+system('git push')
 
 cmd = "gh release create %s --title %s --notes-file %s";
 cmd = sprintf(cmd, version, title, changelogFile);
@@ -34,7 +40,7 @@ cmd = 'gh release upload %s "%s"';
 cmd = sprintf(cmd, version, packageFile);
 [status, cmdout] = system(cmd);
 if status == 1
-    warning('Failed to upload packaged application. Command-Line output:')
+    warning('Failed to upload packaged toolbox. Command-Line output:')
     disp(cmdout)
     return
 end
