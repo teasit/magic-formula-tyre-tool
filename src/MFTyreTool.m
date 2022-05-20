@@ -313,6 +313,14 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             import mftyre.v62.FitMode
             
             tyreModel = app.TyreModel;
+            if isempty(tyreModel)
+                fig = app.UIFigure;
+                title = 'Tyre Model Fitter';
+                message = 'No tyre model loaded.';
+                uialert(fig, message, title, 'Icon', 'error')
+                return
+            end
+            
             tyreModelFitted = copy(tyreModel);
             params = tyreModel.Parameters;
             measurements = app.TyreMeasurements;
