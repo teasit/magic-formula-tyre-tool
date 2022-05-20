@@ -210,16 +210,21 @@ classdef MeasurementImporter < matlab.apps.AppBase
     
     methods (Static, Access = private)
         function [parserNames, parserClassNames] = getParserNames()
-            parsersMetaObj = meta.package.fromName('tydex.parsers');
-            parserMetaClassObjs = parsersMetaObj.ClassList;
-            isAbstract = [parserMetaClassObjs.Abstract];
-            parserMetaClassObjs(isAbstract) = [];
-            parserClassNames = {parserMetaClassObjs.Name};
-            parserNamesSplit = cellfun(...
-                @(x) strsplit(x, '.'), parserClassNames, ...
-                'UniformOutput', false);
-            parserNames = cellfun(@(x) x{end},  parserNamesSplit,  ...
-                'UniformOutput',  false);
+            try
+                parsersMetaObj = meta.package.fromName('tydex.parsers');
+                parserMetaClassObjs = parsersMetaObj.ClassList;
+                isAbstract = [parserMetaClassObjs.Abstract];
+                parserMetaClassObjs(isAbstract) = [];
+                parserClassNames = {parserMetaClassObjs.Name};
+                parserNamesSplit = cellfun(...
+                    @(x) strsplit(x, '.'), parserClassNames, ...
+                    'UniformOutput', false);
+                parserNames = cellfun(@(x) x{end},  parserNamesSplit,  ...
+                    'UniformOutput',  false);
+            catch
+                warning('Could not find any pre-installed parsers!')
+                [parserNames, parserClassNames] = deal({});
+            end
         end
     end
     
