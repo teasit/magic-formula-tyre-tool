@@ -24,6 +24,10 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
         Table   matlab.ui.control.Table
     end
     
+    events (HasCallbackProperty, NotifyAccess = protected)
+        TyreModelEdited
+    end
+    
     events (NotifyAccess = public)
         TyreModelChanged
         TyreModelFitterFinished
@@ -52,6 +56,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                 parameterName = char(obj.Table.Data(...
                     row, obj.ColumnParameter));
                 obj.Model.Parameters.(parameterName).Value = parameterValue;
+                notify(obj, 'TyreModelEdited')
             elseif col == obj.ColumnFixed
                 row = event.Indices(1);
                 parameterFixed = event.NewData;

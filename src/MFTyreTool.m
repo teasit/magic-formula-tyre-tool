@@ -137,6 +137,11 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         end
     end
     methods (Access = private)
+        function onTyreModelEdited(app, ~, ~)
+            model = app.TyreModel;
+            evtdata = events.ModelChangedEventData(model);
+            notify(app.TyreAnalysisPanel, 'TyreModelChanged', evtdata)
+        end
         function onShowLogfileRequested(app, ~, ~)
             if ~isdeployed()
                 disp(['Logfile only available in deployed application. ' ...
@@ -600,7 +605,8 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 'TyreModelStructToMatRequested', @app.onTyreModelStructToMatRequested, ...
                 'TyreModelClearRequested', @app.onClearTyreModelRequested, ...
                 'FitterFittingModesChangedFcn', @app.onFitterFittingModesChanged, ...
-                'FitterStartRequestedFcn', @app.onStartFittingRequested);
+                'FitterStartRequestedFcn', @app.onStartFittingRequested, ...
+                'TyreModelEditedFcn', @app.onTyreModelEdited);
         end
         function createTyreMeasurementsTab(app)
             app.TyreMeasurementsTab = uitab(...
@@ -754,8 +760,8 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             end
             evtdata = events.ModelChangedEventData(modelCopy);
             notify(app.TyreModelPanel, 'TyreModelChanged', evtdata)
+            notify(app.TyreAnalysisPanel, 'TyreModelChanged', evtdata)
             app.TyreModelPanel.Model = modelCopy;
-            app.TyreAnalysisPanel.Model = modelCopy;
         end
         function setTyreMeasurementData(app, measurements)
             fitter = app.TyreModelFitter;

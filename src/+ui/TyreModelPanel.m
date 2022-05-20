@@ -32,6 +32,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         FitterStartRequested
         FitterFittingModesChanged
         TyreModelClearRequested
+        TyreModelEdited
         TyreModelNewRequested
         TyreModelSaveRequested
         TyreModelResetRequested
@@ -107,6 +108,9 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         function onStructToMatRequested(obj, ~, ~)
             notify(obj, 'TyreModelStructToMatRequested')
         end
+        function onTyreModelEdited(obj, ~, ~)
+            notify(obj, 'TyreModelEdited')
+        end
     end
     methods (Access = protected)
         function setupButtons(obj)
@@ -178,6 +182,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.TyreParametersTable = ui.TyreParametersTable(obj.MainGrid);
             obj.TyreParametersTable.Layout.Row = 2;
             obj.TyreParametersTable.Layout.Column = [1 2];
+            obj.TyreParametersTable.TyreModelEditedFcn = @obj.onTyreModelEdited;
         end
         function setupMainGrid(obj)
             obj.MainGrid = uigridlayout(obj);

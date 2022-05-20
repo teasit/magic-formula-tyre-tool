@@ -17,6 +17,9 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         XAxisRangeINCLANGL (1,2) = [-6 6]
         XAxisRangeINFLPRES (1,2) = [0.8 1.0]
         XAxisRangeFZW      (1,2) = [500 1500]
+        
+        % If TRUE, plot will update as soon as tyre model changes
+        AutoRefresh logical = false
     end
     properties (Access = private)
         SteadyStateNamesAll = {
@@ -44,6 +47,8 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         SteadyStateSettingsPanel    matlab.ui.container.Panel
         
         PlotSettingsPanelGrid       matlab.ui.container.GridLayout
+        AutoRefreshStateButtonLabel matlab.ui.control.Label
+        AutoRefreshStateButton      matlab.ui.control.StateButton
         HoldOnSettingLabel          matlab.ui.control.Label
         HoldOnSettingStateButton    matlab.ui.control.StateButton
         DataShowSettingLabel        matlab.ui.control.Label
@@ -62,7 +67,16 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         SteadyStateSettingLabels        matlab.ui.control.Label
         SteadyStateSettingDropDowns     matlab.ui.control.DropDown
     end
+    events (NotifyAccess = public)
+        TyreModelChanged
+    end
     methods (Access = private)
+        function onModelChanged(obj, ~, event)
+            obj.Model = event.Model;
+            if ~isempty(obj.Model) || obj.AutoRefresh
+                updatePlot(obj)
+            end
+        end
         function onSettingsChanged(obj, source, event)
             tag = source.Tag;
             if strcmp(tag, 'HoldOnSettingStateButton')
@@ -82,6 +96,10 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
                     legend(obj.Axes, 'off')
                 end
                 return
+            end
+            if strcmp(tag, 'AutoRefreshStateButton')
+                enable = event.Value;
+                obj.AutoRefresh = enable;
             end
             [names, values] = getSteadyStateUserSelection(obj);
             obj.SteadyStateNamesSelected = names;
@@ -525,6 +543,8 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             else
                 set(obj.DataShowSettingStateButton, 'Enable', 'on')
             end
+            
+            set(obj.AutoRefreshStateButton, 'Value', obj.AutoRefresh)
         end
     end
     methods(Access = protected)
@@ -538,12 +558,21 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function setupPlotSettingsPanel(obj)
             grid = uigridlayout(obj.PlotSettingsPanel, ...
-                'RowHeight', repmat({'fit'}, 8, 1), ...
+                'RowHeight', repmat({'fit'}, 9, 1), ...
                 'ColumnWidth', {'fit', 'fit'}, ...
                 'ColumnSpacing', 10, ...
                 'Padding', 10*ones(1,4), ...
                 'Scrollable', false);
             obj.PlotSettingsPanelGrid = grid;
+            
+            obj.AutoRefreshStateButtonLabel = uilabel(grid, ...
+                'Text', 'Refresh');
+            obj.AutoRefreshStateButton = uibutton(grid, 'state', ...
+                'Text', 'Auto', ...
+                'Value', false, ...
+                'Tag', 'AutoRefreshStateButton', ...
+                'Tooltip', 'Plot will update on new model changes.', ...
+                'ValueChangedFcn', @obj.onSettingsChanged);
             
             obj.ShowLegendStateButtonLabel = uilabel(grid);
             obj.ShowLegendStateButtonLabel.Text = 'Legend';
@@ -651,6 +680,9 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             hold(ax, 'on')
             obj.Axes = ax;
         end
+        function setupListeners(obj)
+            addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
+        end
     end
     methods (Access = protected)
         function setup(obj)
@@ -659,6 +691,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             setupSidePanel(obj)
             setupPlotSettingsPanel(obj)
             setupSteadyStateSettingsPanel(obj)
+            setupListeners(obj)
         end
         function update(obj)
             updatePlotSettings(obj)
