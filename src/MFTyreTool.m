@@ -325,12 +325,18 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         function onStartFittingRequested(app, ~, ~)
             import mftyre.v62.FitMode
             
+            fig = app.UIFigure;
+            title = 'Tyre Model Fitter';
+            message = sprintf(['To start fitting, the following conditions ' ...
+                'must be met:' newline() ...
+                '\t- Tyre model loaded' newline() ...
+                '\t- Tyre data loaded' newline() ...
+                '\t- Fit modes selected (Fx0, Fy0, Fx, ...)']);
+            showUserFail = @(x) uialert(fig, message, title, 'Icon', 'error');
+            
             tyreModel = app.TyreModel;
             if isempty(tyreModel)
-                fig = app.UIFigure;
-                title = 'Tyre Model Fitter';
-                message = 'No tyre model loaded.';
-                uialert(fig, message, title, 'Icon', 'error')
+                showUserFail()
                 return
             end
             
@@ -340,14 +346,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             fitmodes = app.TyreModelFitterFitModes;
             
             if isempty(params) || isempty(measurements) || isempty(fitmodes)
-                fig = app.UIFigure;
-                title = 'Tyre Model Fitter';
-                message = sprintf(['To start fitting, the following conditions ' ...
-                    'must be met:' newline() ...
-                    '\t- Tyre model loaded' newline() ...
-                    '\t- Tyre data loaded' newline() ...
-                    '\t- Fit modes selected (Fx0, Fy0, Fx, ...)']);
-                uialert(fig, message, title, 'Icon', 'info')
+                showUserFail()
                 return
             end
             
@@ -356,8 +355,6 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             fitter.Measurements = measurements;
             fitter.FitModes = fitmodes;
             
-            fig = app.UIFigure;
-            title = 'Tyre Model Fitter';
             message = 'Starting Fitter...';
             dlg = uiprogressdlg(fig, ...
                 'Title', title, ...
