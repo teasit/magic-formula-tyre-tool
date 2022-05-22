@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3920735365" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2604682362" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
     <param.appname>MFTyreToolApp</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -13,7 +13,7 @@
     <param.summary>Create, fit and evaluate MF-Tyre model with a convenient MATLAB GUI.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\doc\img\MFTyreTool_Screenshot_Plot.png</param.screenshot>
-    <param.version>1.0.3</param.version>
+    <param.version>1.1.0</param.version>
     <param.products.name>
       <item>MATLAB</item>
     </param.products.name>
@@ -54,6 +54,7 @@
       <file>${PROJECT_ROOT}\src\+helpers\fitterOutputFcn.m</file>
       <file>${PROJECT_ROOT}\src\+ui\HelpHint.m</file>
       <file>${PROJECT_ROOT}\src\+ui\MeasurementImporter.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\MFTyreToolChart.sfx</file>
       <file>${PROJECT_ROOT}\src\+ui\NumericRangeSelector.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreAnalysisPanel.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreFitterFittingModesPanel.m</file>
@@ -65,6 +66,7 @@
       <file>${PROJECT_ROOT}\src\+ui\TyreModelPanelChart.sfx</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreParametersTable.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreParametersTableViewSettings.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\ViewLayoutSettings.m</file>
       <file>${PROJECT_ROOT}\src\+ui\ViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\about.json</file>
       <file>${PROJECT_ROOT}\src\mftyre-matlab-library\src\+exceptions\EmptyMeasurement.m</file>
