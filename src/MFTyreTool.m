@@ -550,6 +550,48 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             mfparams = struct(mfparams);
             save(file, 'mfparams')
         end
+        function onPlotTyreMeasurementsRequested(app, ~, event)
+            measurements = event.Measurements;
+            fig = app.UIFigure;
+            title = 'Tyre Data Stacked Plot';
+            if isempty(measurements)
+                message = 'No measurements selected in table.';
+                uialert(fig, message, title, 'Icon', 'info')
+                return
+            elseif numel(measurements) > 1
+                message = ['Can only plot one measurement at a time.' ...
+                    newline() 'Please select only one row in the table.'];
+                uialert(fig, message, title, 'Icon', 'info')
+                return
+            end
+            m = measurements;
+            metadata = m.Metadata;
+            I = strcmp({metadata.Name}, 'MEASID');
+            measurementName = metadata(I).Value;
+            
+            measuredObjs = m.Measured;
+            measuredNames = {measuredObjs.Name};
+            I = strcmp(measuredNames, 'RUNTIME');
+            measuredObjs(I) = [];
+            measuredNames = {measuredObjs.Name};
+            
+            sz = [numel(m.RUNTIME) numel(measuredObjs)];
+            type = class(m.RUNTIME);
+            tbl = timetable('Size', sz, ...
+                'VariableTypes', repmat({type}, [1 sz(2)]), ...
+                'RowTimes', seconds(m.RUNTIME), ...
+                'VariableNames', measuredNames);
+            
+            for i = 1:numel(measuredObjs)
+                measured = measuredObjs(i);
+                data = measured.Data;
+                name = measured.Name;
+                tbl.(name) = data;
+            end
+            
+            f = figure('Name', measurementName);
+            stackedplot(f, tbl);
+        end
     end
     methods (Access = private)
         function createComponents(app)
@@ -628,7 +670,9 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 'MeasurementDataClearRequestedFcn', ...
                 @app.onClearMeasurementsRequested, ...
                 'MeasurementDataExportRequestedFcn', ...
-                @app.onExportMeasurementsRequested);
+                @app.onExportMeasurementsRequested, ...
+                'PlotTyreMeasurementsRequestedFcn', ...
+                @app.onPlotTyreMeasurementsRequested);
         end
         function createTyreAnalysisTab(app)
             app.TyreModelAnalysisTab = uitab(...

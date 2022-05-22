@@ -3,6 +3,7 @@ classdef TyreMeasurementsTable < matlab.ui.componentcontainer.ComponentContainer
     
     properties
         Measurements tydex.Measurement = tydex.Measurement.empty
+        MeasurementsSelected tydex.Measurement = tydex.Measurement.empty
         FitModesFlagMap containers.Map
     end
     
@@ -45,6 +46,19 @@ classdef TyreMeasurementsTable < matlab.ui.componentcontainer.ComponentContainer
         end
     end
     
+    methods (Access = private)
+        function onCellSelection(obj, source, event)
+            measurements = obj.Measurements;
+            if isempty(measurements)
+                return
+            end           
+            indices = event.Indices;
+            rows = unique(indices(:,1));
+            measurementsSelected = measurements(rows);
+            obj.MeasurementsSelected = measurementsSelected;
+        end
+    end
+    
     methods (Access = protected)
         function setup(obj)
             % Position only used for standalone-testing.
@@ -61,11 +75,11 @@ classdef TyreMeasurementsTable < matlab.ui.componentcontainer.ComponentContainer
                 'Supplier'
                 'Stationary (Constant) Variables'
                 'Fit Modes'
-                }, ...
+                }, ... 
                 'ColumnWidth', {110, 110, 550, 'auto'}, ...
                 'ColumnEditable', logical([0 0 0 0]), ...
                 'ColumnSortable', logical([1 1 1 1]), ...
-                'CellEditCallback', @obj.onCellEdit);
+                'CellSelectionCallback', @obj.onCellSelection);
         end
         function update(obj)
             measurements = obj.Measurements;            
