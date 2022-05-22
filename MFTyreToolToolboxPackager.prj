@@ -7,7 +7,7 @@
     <param.summary>Create, fit and evaluate MF-Tyre models with a convenient MATLAB GUI.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\doc\img\MFTyreTool_Screenshot_Plot.png</param.screenshot>
-    <param.version>1.0.3</param.version>
+    <param.version>1.0.5</param.version>
     <param.output>${PROJECT_ROOT}\MFTyreTool.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -34,9 +34,11 @@
 % **/*.bak
 %
 
+.github
 .gitmodules
 .gitignore
 .git
+src
 sandbox
 +tests
 tools
@@ -50,7 +52,7 @@ MFTyreToolApp_resources</param.exclude.filters>
     </param.apps>
     <param.registered.apps />
     <param.docs />
-    <param.getting.started.guide />
+    <param.getting.started.guide>${PROJECT_ROOT}\doc\GettingStarted.mlx</param.getting.started.guide>
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>false</param.exported.on.package>
@@ -85,7 +87,6 @@ MFTyreToolApp_resources</param.exclude.filters>
       <param.demosxml />
       <param.registered.apps />
       <param.docs />
-      <param.getting.started.guide />
       <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
@@ -112,7 +113,6 @@ MFTyreToolApp_resources</param.exclude.filters>
       <file>${PROJECT_ROOT}\LICENSE</file>
       <file>${PROJECT_ROOT}\MFTyreToolApp.mlappinstall</file>
       <file>${PROJECT_ROOT}\README.md</file>
-      <file>${PROJECT_ROOT}\src</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />

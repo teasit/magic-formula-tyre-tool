@@ -99,7 +99,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             params = constants(I);
         end
         function dialogApplyParamsFromMeasurements(app, params)
-            fig = app.UIFigure();
+            fig = app.UIFigure;
             
             numParams = numel(params);
             paramStrings = cell(numParams,1);
@@ -137,6 +137,11 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         end
     end
     methods (Access = private)
+        function onUiFigureSizeChanged(app, ~, ~)
+            position = app.UIFigure.Position;
+            width = position(3);
+            height = position(4);
+        end
         function onTyreModelEdited(app, ~, ~)
             model = app.TyreModel;
             evtdata = events.ModelChangedEventData(model);
@@ -575,7 +580,9 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 'Color', [1 1 1], ...
                 'Position', position, ...
                 'Name', name, ...
-                'Icon', 'tyre_icon.png');
+                'Icon', 'tyre_icon.png', ...
+                'AutoResizeChildren', 'off');
+            app.UIFigure.SizeChangedFcn = @app.onUiFigureSizeChanged;
         end
         function createGrid(app)
             app.GridMain = uigridlayout(app.UIFigure, ...
