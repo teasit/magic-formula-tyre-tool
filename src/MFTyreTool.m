@@ -590,7 +590,8 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             end
             
             f = figure('Name', measurementName);
-            stackedplot(f, tbl);
+            stackedplot(f, tbl, 'Marker', '.', 'LineStyle', 'none');
+            grid on
         end
     end
     methods (Access = private)
