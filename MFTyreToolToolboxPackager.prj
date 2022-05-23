@@ -1,13 +1,13 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="2760446424" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolToolboxPackager.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolToolboxPackager" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="2416458237" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolToolboxPackager.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolToolboxPackager" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>MFTyreTool</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
     <param.company />
     <param.summary>Create, fit and evaluate MF-Tyre models with a convenient MATLAB GUI.</param.summary>
     <param.description />
-    <param.screenshot>${PROJECT_ROOT}\doc\img\MFTyreTool_Screenshot_Plot.png</param.screenshot>
-    <param.version>1.1.0</param.version>
+    <param.screenshot>${PROJECT_ROOT}\assets\img\MFTyreTool_Screenshot_Plot.png</param.screenshot>
+    <param.version>1.1.1</param.version>
     <param.output>${PROJECT_ROOT}\MFTyreTool.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -42,6 +42,8 @@ src
 sandbox
 +tests
 tools
+assets
+slprj
 resources
 MFTyreToolApp_resources</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
