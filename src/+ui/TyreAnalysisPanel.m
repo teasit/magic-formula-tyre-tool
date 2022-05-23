@@ -42,6 +42,9 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         Axes                        matlab.ui.control.UIAxes
         SidePanel                   matlab.ui.container.Panel
         
+        ButtonsGrid                 matlab.ui.container.GridLayout
+        ShowSidebarStateButton      matlab.ui.control.StateButton
+        
         SidePanelGrid               matlab.ui.container.GridLayout
         PlotSettingsPanel           matlab.ui.container.Panel
         SteadyStateSettingsPanel    matlab.ui.container.Panel
@@ -269,6 +272,19 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
                     return
             end
             updatePlot(obj)
+        end
+        function onShowSidebarStateButtonValueChanged(obj, ~, event)
+            show = event.Value;
+            grid = obj.SidePanelGrid;
+            axes = obj.Axes;
+            % TODO
+            if show
+                set(grid, 'Visible', 'on')
+                axes.Layout.Column = 1;
+            else
+                set(grid, 'Visible', 'off')
+                axes.Layout.Column = [1 2];
+            end
         end
     end
     methods(Access = protected)
@@ -550,10 +566,10 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     methods(Access = protected)
         function setupMainGrid(obj)
             obj.MainGrid = uigridlayout(obj, ...
-                'RowHeight', {'1x'}, ...
+                'RowHeight', {22,'1x'}, ...
                 'ColumnWidth', {'1x', 'fit'}, ...
                 'ColumnSpacing', 10, ...
-                'Padding', 10*ones(1,4), ...
+                'Padding', 0*ones(1,4), ...
                 'Scrollable', false);
         end
         function setupPlotSettingsPanel(obj)
@@ -660,7 +676,6 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
                 'ColumnSpacing', 0, ...
                 'Padding', zeros(1,4), ...
                 'Scrollable', true);
-            obj.SidePanelGrid.Layout.Row = 1;
             obj.SidePanelGrid.Layout.Column = 2;
             
             obj.PlotSettingsPanel = uipanel(obj.SidePanelGrid, ...
@@ -679,6 +694,27 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             grid(ax, 'on')
             hold(ax, 'on')
             obj.Axes = ax;
+            ax.Layout.Row = 2;
+            ax.Layout.Column = 1;
+        end
+        function setupButtons(obj)
+            obj.ButtonsGrid = uigridlayout(obj.MainGrid, ...
+                'RowHeight', {22}, ...
+                'ColumnWidth', {'1x', 25}, ...
+                'ColumnSpacing', 10, ...
+                'Padding', zeros(1,4));
+            obj.ButtonsGrid.Layout.Row = 1;
+            obj.ButtonsGrid.Layout.Column = [1 2];
+            
+            obj.ShowSidebarStateButton = ...
+                uibutton(obj.ButtonsGrid, 'state', ...
+                'Icon', 'gears-solid.svg', ...
+                'Text', char.empty, ...
+                'Value', true, ...
+                'Tooltip', 'Toggles visibility of axes sidebar', ...
+                'ValueChangedFcn', @obj.onShowSidebarStateButtonValueChanged);
+            obj.ShowSidebarStateButton.Layout.Column = ...
+                numel(obj.ButtonsGrid.ColumnWidth);
         end
         function setupListeners(obj)
             addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
@@ -686,8 +722,10 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     methods (Access = protected)
         function setup(obj)
+            set(obj, 'Position', [0 0 800 400])
             setupMainGrid(obj)
             setupAxes(obj)
+            setupButtons(obj)
             setupSidePanel(obj)
             setupPlotSettingsPanel(obj)
             setupSteadyStateSettingsPanel(obj)
