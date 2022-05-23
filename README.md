@@ -3,7 +3,7 @@
 [![View MFTyreTool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/mftyre-matlab-tool)
 
-![Screenshot Analysis Tab with Plots](/doc/img/MFTyreTool_Screenshot_Plot.png)
+![Screenshot Analysis Tab with Plots](/assets/img/MFTyreTool_Screenshot_Plot.png)
 
 - Interactively fit MF-Tyre models to data
 - Automatically separate timeseries data into steady-state conditions
@@ -101,7 +101,7 @@ measurement object contains data for only one steady-state condition. This means
 one variable is *sweeped* (= *transient*). In case of Formula SAE Tire Test Consortium Data,
 two parsers for *Cornering* and *Drive/Brake* MAT files in SI-units are already available.
 
-![Screenshot Measurement Import](doc/img/MFTyreTool_Screenshot_DataImport.png)
+![Screenshot Measurement Import](assets/img/MFTyreTool_Screenshot_DataImport.png)
 
 ### Fit Model to Data
 
@@ -110,7 +110,7 @@ Interactively means, you can cancel the fitting process at any point. The last i
 will be saved and you can compare the fitted values to the current model values in a
 table. You can then choose to append these values to your model.
 
-![Animation Fitting](doc/img/MFTyreTool_Animation_Fitting.gif)
+![Animation Fitting](assets/img/MFTyreTool_Animation_Fitting.gif)
 
 ### Plot Model against Data
 
@@ -120,17 +120,17 @@ you will be able to select steady-state values from the dropdowns and thereby fi
 data. The MF-Tyre model will then be supplied with the measured inputs for an exact
 comparison.
 
-![Animation Plotting](doc/img/MFTyreTool_Animation_Plotting.gif)
+![Animation Plotting](assets/img/MFTyreTool_Animation_Plotting.gif)
 
 ## Screenshots
 
-![Screenshot Model Tab with Fitted Values](/doc/img/MFTyreTool_Screenshot_ModelTabFitted.png)
+![Screenshot Model Tab with Fitted Values](/assets/img/MFTyreTool_Screenshot_ModelTabFitted.png)
 
-![Screenshot Data Tab](/doc/img/MFTyreTool_Screenshot_DataTab.png)
+![Screenshot Data Tab](/assets/img/MFTyreTool_Screenshot_DataTab.png)
 
-![Screenshot Model Tab while Fitting Runs](/doc/img/MFTyreTool_Screenshot_Fitting.png)
+![Screenshot Model Tab while Fitting Runs](/assets/img/MFTyreTool_Screenshot_Fitting.png)
 
-![Screenshot Analysis Tab with Plots and Legend](/doc/img/MFTyreTool_Screenshot_PlotWithLegend.png)
+![Screenshot Analysis Tab with Plots and Legend](/assets/img/MFTyreTool_Screenshot_PlotWithLegend.png)
 
 ## Known Issues
 
