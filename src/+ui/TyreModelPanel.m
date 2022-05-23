@@ -219,7 +219,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.MainGrid.RowHeight = {22,'1x'};
             obj.MainGrid.ColumnWidth = {'1x', 'fit'};
             obj.MainGrid.ColumnSpacing = 10;
-            obj.MainGrid.Padding = 10*ones(1,4);
+            obj.MainGrid.Padding = zeros(1,4);
             obj.MainGrid.Scrollable = false;
         end
         function setupSidePanel(obj)
