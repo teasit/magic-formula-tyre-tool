@@ -839,6 +839,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             
             children = fig.Children;
             delete(children)
+            delete(app.UiChart)
             
             metaClass = ?MFTyreTool;
             metaProperties = metaClass.PropertyList;
@@ -880,6 +881,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             delete(app.TyreModelBackup)
             delete(app.TyreModelFitter)
             delete(app.UIFigure)
+            delete(app.UiChart)
         end
     end
 end
