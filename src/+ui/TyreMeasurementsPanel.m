@@ -23,6 +23,11 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
         ClearButton     matlab.ui.control.Button
         PlotButton      matlab.ui.control.Button
     end
+    properties (Access = protected)
+        ButtonsGridColumnWidthWithText = [repmat({110}, 1, 4) {'1x'}];
+        ButtonsGridColumnWidthOnlyIcon = [repmat({25}, 1, 4) {'1x'}];
+        ButtonsTexts cell
+    end
     
     methods (Access = private)
         function onImportMeasurementDialogRequested(obj, ~, ~)
@@ -45,6 +50,31 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
             e = events.PlotTyreMeasurementsRequested(measurements);
             notify(obj, 'PlotTyreMeasurementsRequested', e)
         end
+        function onUiFigureSizeChanged(obj, ~, ~)
+            parent = obj.Parent;
+            while isa(parent, 'matlab.ui.container.GridLayout')
+                parent = parent.Parent;
+            end
+            width = parent.Position(3);
+            
+            buttonsGrid = obj.ButtonsGrid;
+            buttons = obj.ButtonsGrid.Children;
+            buttonWidths = obj.ButtonsGridColumnWidthWithText;
+            buttonWidths = buttonWidths(cellfun(@isnumeric, buttonWidths));
+            minWidthButtonsWithText = sum([buttonWidths{:}]) ...
+                + (numel(buttons)+2)*buttonsGrid.ColumnSpacing;
+            removeTextFromButtons = width < minWidthButtonsWithText;
+            if removeTextFromButtons
+                set(buttons, 'Text', '')
+                set(buttonsGrid, ...
+                    'ColumnWidth', obj.ButtonsGridColumnWidthOnlyIcon);
+            else
+                texts = obj.ButtonsTexts;
+                [buttons(:).Text] = deal(texts{:});
+                set(buttonsGrid, ...
+                    'ColumnWidth', obj.ButtonsGridColumnWidthWithText);
+            end
+        end
     end
     
     methods (Access = protected)
@@ -58,7 +88,7 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
                 'Padding', zeros(1,4));
             obj.ButtonsGrid = uigridlayout(obj.Grid, ...
                 'RowHeight', {22}, ...
-                'ColumnWidth', [repmat({110}, 1, 4) {'1x'}], ...
+                'ColumnWidth', obj.ButtonsGridColumnWidthWithText, ...
                 'ColumnSpacing', 10, ...
                 'Padding', zeros(1,4));
             obj.ImportButton = uibutton(obj.ButtonsGrid, ...
@@ -81,7 +111,13 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
                 'Icon', 'chart-line-solid.svg', ...
                 'Tooltip', 'Visualize imported measurements in Stacked Plot', ...
                 'ButtonPushedFcn', @obj.onPlotMeasurementRequested);
+            btns = obj.ButtonsGrid.Children;
+            obj.ButtonsTexts = {btns.Text};
+            
             obj.Table = ui.TyreMeasurementsTable(obj.Grid);
+            
+            set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)
+            
             setupListeners(obj)
         end
         function setupListeners(obj)
