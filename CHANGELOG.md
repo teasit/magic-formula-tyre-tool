@@ -1,3 +1,3 @@
 # Changelog
 
-- fix: UI bugged if reset was called in dual tabgroup layout
+- measurement tab buttons now also resize when not enough space is available
