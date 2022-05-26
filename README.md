@@ -3,7 +3,7 @@
 [![View MFTyreTool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/mftyre-matlab-tool)
 
-![Screenshot Analysis Tab with Plots](/assets/img/MFTyreTool_Screenshot_Plot.png)
+![Screenshot Analysis Tab with Plots](/assets/img/MFTyreTool_Screenshot_Main.jpg)
 
 - Interactively fit MF-Tyre models to data
 - Automatically separate timeseries data into steady-state conditions
