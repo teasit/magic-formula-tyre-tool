@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="4158023395" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3610955114" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
     <param.appname>MFTyreToolApp</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -13,7 +13,7 @@
     <param.summary>Create, fit and evaluate MF-Tyre model with a convenient MATLAB GUI.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\assets\img\MFTyreTool_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.1.4</param.version>
+    <param.version>1.1.5</param.version>
     <param.products.name>
       <item>MATLAB</item>
     </param.products.name>
@@ -52,6 +52,7 @@
       <file>${PROJECT_ROOT}\src\+exceptions\CouldNotImportTIR.m</file>
       <file>${PROJECT_ROOT}\src\+exceptions\InvalidSolverOptions.m</file>
       <file>${PROJECT_ROOT}\src\+exceptions\UnknownModelParameter.m</file>
+      <file>${PROJECT_ROOT}\src\+helpers\checkUpdateAvailable.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\fitterOutputFcn.m</file>
       <file>${PROJECT_ROOT}\src\+ui\HelpHint.m</file>
       <file>${PROJECT_ROOT}\src\+ui\MeasurementImporter.m</file>
@@ -93,9 +94,11 @@
       <file>${PROJECT_ROOT}\src\mftyre-matlab-library\src\+tydex\Measurement.m</file>
       <file>${PROJECT_ROOT}\src\mftyre-matlab-library\src\+tydex\Metadata.m</file>
       <file>${PROJECT_ROOT}\src\mftyre-matlab-library\src\+tydex\Parameter.m</file>
+      <file>${PROJECT_ROOT}\src\mftyre-matlab-library\src\+tydex\Parser.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\assets</file>
+      <file>${PROJECT_ROOT}\src\mftyre-matlab-library\src\+tydex\+parsers</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
