@@ -1,3 +1,3 @@
 # Changelog
 
-- measurement tab buttons now also resize when not enough space is available
+- Help Menu now has option to check for updates (using GitHub release tags)

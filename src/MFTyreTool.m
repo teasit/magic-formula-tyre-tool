@@ -142,6 +142,32 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             width = position(3);
             height = position(4);
         end
+        function onCheckUpdates(app, ~, ~)
+            fig = app.UIFigure;
+            title = 'Check for Updates';
+            versionCurrent = app.About.Version;
+            try
+                [available, versionLatest] = ...
+                    helpers.checkUpdateAvailable(versionCurrent);
+            catch
+                icon = 'error';
+                message = ['Could not check for updates.\n' ...
+                    'Internet connection available?'];
+                uialert(fig, message, title, 'icon', icon)
+                return
+            end
+                
+            if available
+                icon = 'info';
+                message = 'Update from %s to %s available.';
+                message = sprintf(message, versionCurrent, versionLatest);
+            else
+                icon = 'success';
+                message = 'The latest version is already installed (%s).';
+                message = sprintf(message, versionCurrent);
+            end
+            uialert(fig, message, title, 'icon', icon)
+        end
         function onTyreModelEdited(app, ~, ~)
             model = app.TyreModel;
             evtdata = events.ModelChangedEventData(model);
@@ -770,6 +796,9 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         end
         function createHelpMenu(app)
             app.HelpMenu = uimenu(app.UIFigure, 'Text', 'Help');
+            uimenu(app.HelpMenu, ...
+                'Text', 'Check for Updates', ...
+                'MenuSelectedFcn', @app.onCheckUpdates)
             uimenu(app.HelpMenu, ...
                 'Text', 'About', ...
                 'MenuSelectedFcn', @app.onAboutDialogRequested)
