@@ -39,6 +39,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         AppMenu                 matlab.ui.container.Menu
         HelpMenu                matlab.ui.container.Menu
         ViewMenu                matlab.ui.container.Menu
+        SelectFitModesMenu      matlab.ui.container.Menu
         
         TyreModelFittingTab     matlab.ui.container.Tab
         TyreModelPanel          ui.TyreModelPanel
@@ -82,6 +83,19 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 baseException = exceptions.CouldNotExportTIR(fileName);
                 baseException = addCause(baseException, sourceException);
                 throw(baseException)
+            end
+        end
+    end
+    methods
+        function set.TyreModelFitterFitModes(app, fitmodes)
+            app.TyreModelFitterFitModes = fitmodes;
+            menus = app.SelectFitModesMenu.Children;
+            menuTexts = {menus.Text};
+            set(menus, 'Checked', 'off')
+            for i = 1:numel(fitmodes)
+                fitmodeName = char(fitmodes(i));
+                I = strcmp(menuTexts, {fitmodeName});
+                menus(I).Checked = 'on';
             end
         end
     end
@@ -191,6 +205,27 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         function onFitterFittingModesChanged(app, ~, event)
             modes = event.FitModes;
             app.TyreModelFitterFitModes = modes;
+        end
+        function onSelectFitModesMenuSelected(app, source, ~)
+            [fitmodes, fitmodeNames] = enumeration('mftyre.v62.FitMode');
+            fitmodeName = source.Text;
+            I = strcmp(fitmodeNames, fitmodeName);
+            fitmode = fitmodes(I);
+            enable = ~logical(source.Checked);
+            fitmodesEnabled = app.TyreModelFitterFitModes;
+            if enable
+                fitmodesEnabled = [fitmodesEnabled fitmode];
+                fitmodesEnabled = sort(fitmodesEnabled);
+                fitmodesEnabled = unique(fitmodesEnabled);
+            else
+                I = fitmodesEnabled == fitmode;
+                fitmodesEnabled(I) = [];
+            end
+            app.TyreModelFitterFitModes = fitmodesEnabled;
+            source.Checked = matlab.lang.OnOffSwitchState(enable);
+            
+            e = events.FittingModesChangedEventData(fitmodesEnabled);
+            notify(app.TyreModelPanel, 'TyreFitterModesChanged', e)
         end
         function onLoadModelRequested(app, ~, ~)
             [fileName, path] = uigetfile('.tir', ...
@@ -746,11 +781,24 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 'Text', 'Clear Tyre Data', ...
                 'MenuSelectedFcn', @app.onClearMeasurementsRequested);
             
+            app.SelectFitModesMenu = uimenu(app.AppMenu, ...
+                'Text', 'Select Fit-Modes', ...
+                'Separator', 'on');
+            fitmodes = {
+                char(mftyre.v62.FitMode.Fx0)
+                char(mftyre.v62.FitMode.Fy0)
+                char(mftyre.v62.FitMode.Fx)
+                char(mftyre.v62.FitMode.Fy)
+                };
+            for i = 1:numel(fitmodes)
+                fitmode = fitmodes{i};
+                uimenu(app.SelectFitModesMenu, 'Text', fitmode, ...
+                    'MenuSelectedFcn', @app.onSelectFitModesMenuSelected);
+            end
             uimenu(app.AppMenu, ...
                 'Text', 'Start &Fitter', ...
                 'Accelerator', 'F', ...
-                'MenuSelectedFcn', @app.onStartFittingRequested, ...
-                'Separator', 'on');
+                'MenuSelectedFcn', @app.onStartFittingRequested);
             
             uimenu(app.AppMenu, ...
                 'Text', '&Reset Application', ...

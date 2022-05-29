@@ -45,6 +45,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     events (NotifyAccess = public)
         TyreModelChanged
+        TyreFitterModesChanged
         TyreModelFitterFinished
         ViewSettingsChanged
     end
@@ -113,6 +114,11 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function onTyreModelEdited(obj, ~, ~)
             notify(obj, 'TyreModelEdited')
+        end
+        function onTyreFitterModesChanged(obj, ~, event)
+            fitmodes = event.FitModes;
+            e = events.FittingModesChangedEventData(fitmodes);
+            notify(obj.FitterPanel, 'TyreFitterModesChanged', e)
         end
         function onUiFigureSizeChanged(obj, ~, ~)
             parent = obj.Parent;
@@ -247,6 +253,8 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
                 @obj.onTyreModelFitterFinished);
             addlistener(obj, 'ViewSettingsChanged', ...
                 @obj.onViewSettingsChanged);
+            addlistener(obj, 'TyreFitterModesChanged', ...
+                @obj.onTyreFitterModesChanged);
         end
     end
     methods (Access = protected)

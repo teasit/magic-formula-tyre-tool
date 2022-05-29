@@ -1,3 +1,3 @@
 # Changelog
 
-- fix: `tydex.parsers` package was not delivered
+- new: fitmodes now also selectable using "App" menu in menu bar
