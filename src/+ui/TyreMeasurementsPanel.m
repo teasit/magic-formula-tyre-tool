@@ -5,13 +5,12 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
         MeasurementDataImportRequested
         MeasurementDataClearRequested
         MeasurementDataExportRequested
+        MeasurementDataSelectionChanged
+        PlotTyreMeasurementsRequested
     end
     
     events (NotifyAccess = public)
         MeasurementDataChanged
-    end
-    events (HasCallbackProperty, NotifyAccess = protected)
-        PlotTyreMeasurementsRequested
     end
     
     properties (Access = private, Transient, NonCopyable)
@@ -49,6 +48,12 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
             measurements = obj.Table.MeasurementsSelected;
             e = events.PlotTyreMeasurementsRequested(measurements);
             notify(obj, 'PlotTyreMeasurementsRequested', e)
+        end
+        function onMeasurementSelectionChanged(obj, ~, event)
+            measurements = event.Measurements;
+            I = event.Indices;
+            e = events.MeasurementSelectionChanged(measurements, I);
+            notify(obj, 'MeasurementDataSelectionChanged', e)            
         end
         function onUiFigureSizeChanged(obj, ~, ~)
             parent = obj.Parent;
@@ -114,7 +119,9 @@ classdef TyreMeasurementsPanel < matlab.ui.componentcontainer.ComponentContainer
             btns = obj.ButtonsGrid.Children;
             obj.ButtonsTexts = {btns.Text};
             
-            obj.Table = ui.TyreMeasurementsTable(obj.Grid);
+            obj.Table = ui.TyreMeasurementsTable(obj.Grid, ...
+                'MeasurementSelectionChangedFcn', ...
+                @obj.onMeasurementSelectionChanged);
             
             set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)
             

@@ -16,6 +16,10 @@ classdef TyreMeasurementsTable < matlab.ui.componentcontainer.ComponentContainer
         Table           matlab.ui.control.Table
     end
     
+    events (HasCallbackProperty, NotifyAccess = protected)
+        MeasurementSelectionChanged
+    end
+    
     methods (Access = public)
         function data = appendFitModesToTableData(obj, data, flagsMap)
             arguments
@@ -47,15 +51,20 @@ classdef TyreMeasurementsTable < matlab.ui.componentcontainer.ComponentContainer
     end
     
     methods (Access = private)
-        function onCellSelection(obj, source, event)
+        function onCellSelection(obj, ~, event)
             measurements = obj.Measurements;
             if isempty(measurements)
                 return
             end           
             indices = event.Indices;
             rows = unique(indices(:,1));
-            measurementsSelected = measurements(rows);
-            obj.MeasurementsSelected = measurementsSelected;
+            measurements = measurements(rows);
+            obj.MeasurementsSelected = measurements;
+            numRows = size(obj.Table.Data,1);
+            I = false(numRows, 1);
+            I(rows) = true;
+            e = events.MeasurementSelectionChanged(measurements, I);
+            notify(obj, 'MeasurementSelectionChanged', e)
         end
     end
     

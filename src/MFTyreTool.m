@@ -9,6 +9,8 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         TyreModelBackup mftyre.Model = mftyre.v62.Model.empty()
         TyreModelFitted mftyre.Model = mftyre.v62.Model.empty()
         TyreMeasurements tydex.Measurement
+        TyreMeasurementsSelected tydex.Measurement
+        TyreMeasurementsSelectionIndices logical
         TyreModelFitter mftyre.v62.Fitter
         TyreModelFitterFitModes mftyre.v62.FitMode
         
@@ -155,6 +157,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             position = app.UIFigure.Position;
             width = position(3);
             height = position(4);
+            % todo: do stuff here
         end
         function onCheckUpdates(app, ~, ~)
             fig = app.UIFigure;
@@ -320,17 +323,28 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         end
         function onClearMeasurementsRequested(app, ~, ~)
             message = 'Clear loaded measurements?';
-            title = 'Clear Measurements';
-            options = {'Yes', 'Cancel'};
+            title = 'Clear Data';
+            optionClearAll = 'Clear All';
+            optionClearSelected = 'Clear Selected';
+            optionCancel = 'Cancel';
+            options = {optionClearSelected, optionClearAll, optionCancel};
             selection = uiconfirm(app.UIFigure, message, title, ...
-                'Icon', 'warning');
-            userCancel = strcmp(selection, options{end});
-            if userCancel
-                return
+                'Icon', 'info', ...
+                'Options', options, ...
+                'DefaultOption', optionCancel, ...
+                'CancelOption', optionCancel);
+            switch selection
+                case optionCancel
+                    return
+                case optionClearAll
+                    measurementsNew = tydex.Measurement.empty;
+                case optionClearSelected
+                    I = app.TyreMeasurementsSelectionIndices;
+                    measurements = app.TyreMeasurements;
+                    measurements(I) = [];
+                    measurementsNew = measurements;
             end
-            
-            measurementsEmpty = tydex.Measurement.empty;
-            app.setTyreMeasurementData(measurementsEmpty)
+            app.setTyreMeasurementData(measurementsNew)
         end
         function onAboutDialogRequested(app, ~, ~)
             fig = app.UIFigure;
@@ -654,6 +668,12 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             stackedplot(f, tbl, 'Marker', '.', 'LineStyle', 'none');
             grid on
         end
+        function onMeasurementDataSelectionChanged(app, ~, event)
+            measurements = event.Measurements;
+            I = event.Indices;
+            app.TyreMeasurementsSelected = measurements;
+            app.TyreMeasurementsSelectionIndices = I;
+        end
     end
     methods (Access = private)
         function createComponents(app)
@@ -734,7 +754,9 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 'MeasurementDataExportRequestedFcn', ...
                 @app.onExportMeasurementsRequested, ...
                 'PlotTyreMeasurementsRequestedFcn', ...
-                @app.onPlotTyreMeasurementsRequested);
+                @app.onPlotTyreMeasurementsRequested, ...
+                'MeasurementDataSelectionChanged', ...
+                @app.onMeasurementDataSelectionChanged);
         end
         function createTyreAnalysisTab(app)
             app.TyreModelAnalysisTab = uitab(...
@@ -895,6 +917,8 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             flags = fitter.FitModeFlags;
             
             app.TyreMeasurements = measurements;
+            app.TyreMeasurementsSelected = tydex.Measurement.empty;
+            app.TyreMeasurementsSelectionIndices = logical.empty;
             app.TyreAnalysisPanel.Measurements = measurements;
             
             e = events.TyreMeasurementsChanged(measurements, flags);
