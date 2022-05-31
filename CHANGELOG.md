@@ -1,3 +1,3 @@
 # Changelog
 
-- new: fitmodes now also selectable using "App" menu in menu bar
+- updated documentation (GettingStarted.mlx and README.md)

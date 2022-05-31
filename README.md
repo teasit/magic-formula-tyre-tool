@@ -38,6 +38,12 @@ of the application, to conform to the
 Special thanks to Dr. Edward M. Kasprzak for granting me permission to provide the used,
 de-identified and obscured data for demonstration purposes.
 
+## Requirements
+
+- MATLAB Base (tested with R2021a)
+- Optimization Toolbox (for fitting)
+- Signal Processing Toolbox (for raw measurement import)
+
 ## Installation
 
 There are several ways:
@@ -101,7 +107,7 @@ measurement object contains data for only one steady-state condition. This means
 one variable is *sweeped* (= *transient*). In case of Formula SAE Tire Test Consortium Data,
 two parsers for *Cornering* and *Drive/Brake* MAT files in SI-units are already available.
 
-![Screenshot Measurement Import](assets/img/MFTyreTool_Screenshot_DataImport.png)
+![Animation Data Import](assets/img/MFTyreTool_Screenshot_DataImport.gif)
 
 ### Fit Model to Data
 
@@ -111,6 +117,16 @@ will be saved and you can compare the fitted values to the current model values 
 table. You can then choose to append these values to your model.
 
 ![Animation Fitting](assets/img/MFTyreTool_Animation_Fitting.gif)
+
+![Animation Fitting](assets/img/MFTyreTool_Animation_AppendFitted.gif)
+
+### Manual Model Editing
+
+You can manually edit the model values in the table. When using the Auto-Refresh feature,
+the plot updates automatically to reflect your changes. This helps to get an intuition on
+the effects of different parameter values.
+
+![Animation Manual Editing](MFTyreTool_Animation_ManualEditing.gif)
 
 ### Plot Model against Data
 
@@ -122,17 +138,8 @@ comparison.
 
 ![Animation Plotting](assets/img/MFTyreTool_Animation_Plotting.gif)
 
-## Screenshots
-
-![Screenshot Model Tab with Fitted Values](/assets/img/MFTyreTool_Screenshot_ModelTabFitted.png)
-
-![Screenshot Data Tab](/assets/img/MFTyreTool_Screenshot_DataTab.png)
-
-![Screenshot Model Tab while Fitting Runs](/assets/img/MFTyreTool_Screenshot_Fitting.png)
-
-![Screenshot Analysis Tab with Plots and Legend](/assets/img/MFTyreTool_Screenshot_PlotWithLegend.png)
-
 ## Known Issues
 
+- Currently only Fitting of Fx0, Fy0, Fx, Fy is supported
 - Only MF-Tyre 6.1.2 (62) is supported.
 - The FSAE TTC parsers might not always work. You might have to create your own parser.

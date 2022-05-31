@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2220732703" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2700989730" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
     <param.appname>MFTyreToolApp</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -13,15 +13,21 @@
     <param.summary>Create, fit and evaluate MF-Tyre model with a convenient MATLAB GUI.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\assets\img\MFTyreTool_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.1.6</param.version>
+    <param.version>1.1.7</param.version>
     <param.products.name>
       <item>MATLAB</item>
+      <item>Optimization Toolbox</item>
+      <item>Signal Processing Toolbox</item>
     </param.products.name>
     <param.products.id>
       <item>1</item>
+      <item>6</item>
+      <item>8</item>
     </param.products.id>
     <param.products.version>
       <item>9.10</item>
+      <item>9.1</item>
+      <item>8.6</item>
     </param.products.version>
     <param.platforms />
     <param.output>${PROJECT_ROOT}</param.output>
