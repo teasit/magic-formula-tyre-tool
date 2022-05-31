@@ -1,3 +1,4 @@
 # Changelog
 
-- new: can now delete individual (selected) measurements from table (not just all at once)
+- updated mftyre library submodule
+- fix: fitmode selection via menu bar not propagated to table

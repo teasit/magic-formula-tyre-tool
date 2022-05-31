@@ -233,7 +233,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         function onLoadModelRequested(app, ~, ~)
             [fileName, path] = uigetfile('.tir', ...
                 'Select Tyre Properties File');
-            userCanceled = path == 0;
+            userCanceled = path == 0;  
             if userCanceled
                 return
             end
