@@ -12,7 +12,6 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
     properties (Access = private, Transient, NonCopyable)
         Grid                matlab.ui.container.GridLayout
         Checkboxes          matlab.ui.control.CheckBox
-        Panel               matlab.ui.container.Panel
     end
     
     methods (Access = private)
@@ -41,7 +40,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
     
     methods (Access = protected)
         function setupGrid(obj)
-            obj.Grid = uigridlayout(obj.Panel, ...
+            obj.Grid = uigridlayout(obj, ...
                 'RowHeight', repmat({'fit'}, 1, 3), ...
                 'ColumnWidth', repmat({'1x'}, 1, 3), ...
                 'ColumnSpacing', 5, ...
@@ -64,7 +63,6 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
         end
         function setup(obj)
             obj.Position = [0 0 500 150]; % for testing
-            obj.Panel = uipanel(obj, 'BorderType', 'none');
             setupGrid(obj)
             setupCheckboxes(obj)
         end

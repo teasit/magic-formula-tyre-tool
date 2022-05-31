@@ -8,7 +8,6 @@ classdef TyreFitterSolverSettingsPanel < matlab.ui.componentcontainer.ComponentC
     
     properties (Access = private, Transient, NonCopyable)
         Grid                        matlab.ui.container.GridLayout
-        Panel                       matlab.ui.container.Panel
         AlgorithmDropdown           matlab.ui.control.DropDown
         MaxFunEvalEditField         matlab.ui.control.EditField
         MaxIterEditField            matlab.ui.control.EditField
@@ -45,11 +44,9 @@ classdef TyreFitterSolverSettingsPanel < matlab.ui.componentcontainer.ComponentC
     methods (Access = protected)
         function setup(obj)
             % Position only used for standalone-testing.
-            obj.Position = [0 0 300 150];
+            obj.Position = [0 0 1000 500];
             
-            obj.Panel = uipanel(obj, 'BorderType', 'none');
-            
-            obj.Grid = uigridlayout(obj.Panel, ...
+            obj.Grid = uigridlayout(obj, ...
                 'RowHeight', repmat({20}, 1, 4), ...
                 'ColumnWidth', repmat({'fit'}, 1, 2), ...
                 'Padding', zeros(1,4), ...
