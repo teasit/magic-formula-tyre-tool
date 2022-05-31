@@ -1,3 +1,3 @@
 # Changelog
 
-- fixed buggy UI for R2022a and MATLAB online (fitter panel)
+- new: can now delete individual (selected) measurements from table (not just all at once)
