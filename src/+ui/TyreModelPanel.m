@@ -117,6 +117,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function onTyreFitterModesChanged(obj, ~, event)
             fitmodes = event.FitModes;
+            obj.TyreParametersTable.FitModes = fitmodes;
             e = events.FittingModesChangedEventData(fitmodes);
             notify(obj.FitterPanel, 'TyreFitterModesChanged', e)
         end
