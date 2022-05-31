@@ -240,8 +240,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             
             file = fullfile(path, fileName);
             try
-                model = mftyre.v62.Model;
-                model.importTyrePropertiesFile(file)
+                model = mftyre.v62.Model(file);
                 app.setTyreModel(model)
             catch cause
                 exception = exceptions.CouldNotImportTIR(fileName);
