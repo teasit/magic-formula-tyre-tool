@@ -126,7 +126,7 @@ You can manually edit the model values in the table. When using the Auto-Refresh
 the plot updates automatically to reflect your changes. This helps to get an intuition on
 the effects of different parameter values.
 
-![Animation Manual Editing](MFTyreTool_Animation_ManualEditing.gif)
+![Animation Manual Editing](assets/img/MFTyreTool_Animation_ManualEditing.gif)
 
 ### Plot Model against Data
 
