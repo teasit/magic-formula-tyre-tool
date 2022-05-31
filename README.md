@@ -1,7 +1,7 @@
 # MF-Tyre MATLAB Tool
 
 [![View MFTyreTool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/mftyre-matlab-tool)](https://github.com/teasit/mftyre-matlab-tool/releases)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/mftyre-matlab-tool)](https://github.com/teasit/mftyre-matlab-tool/releases/latest)
 
 ![Screenshot Analysis Tab with Plots](/assets/img/MFTyreTool_Screenshot_Main.jpg)
 
