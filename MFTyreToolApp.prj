@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="690797085" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2034333270" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MFTyreToolApp.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MFTyreToolApp" target="target.mlapps" target-name="Package App">
     <param.appname>MFTyreToolApp</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -13,7 +13,7 @@
     <param.summary>Create, fit and evaluate MF-Tyre model with a convenient MATLAB GUI.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\assets\img\MFTyreTool_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.2.0</param.version>
+    <param.version>1.2.1</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Optimization Toolbox</item>
@@ -47,6 +47,7 @@
       <file>${PROJECT_ROOT}\src\+events\FitterMeasurementsLoadedEventData.m</file>
       <file>${PROJECT_ROOT}\src\+events\FitterSettingsChangedEventData.m</file>
       <file>${PROJECT_ROOT}\src\+events\FittingModesChangedEventData.m</file>
+      <file>${PROJECT_ROOT}\src\+events\MeasurementSelectionChanged.m</file>
       <file>${PROJECT_ROOT}\src\+events\ModelChangedEventData.m</file>
       <file>${PROJECT_ROOT}\src\+events\PlotTyreMeasurementsRequested.m</file>
       <file>${PROJECT_ROOT}\src\+events\RangeChanged.m</file>
@@ -60,6 +61,7 @@
       <file>${PROJECT_ROOT}\src\+exceptions\UnknownModelParameter.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\checkUpdateAvailable.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\fitterOutputFcn.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\FrictionEllipseAxes.m</file>
       <file>${PROJECT_ROOT}\src\+ui\HelpHint.m</file>
       <file>${PROJECT_ROOT}\src\+ui\MeasurementImporter.m</file>
       <file>${PROJECT_ROOT}\src\+ui\MFTyreToolChart.sfx</file>
@@ -74,6 +76,8 @@
       <file>${PROJECT_ROOT}\src\+ui\TyreModelPanelChart.sfx</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreParametersTable.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreParametersTableViewSettings.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\TyrePlotCurvesPanel.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\TyrePlotFrictionEllipsePanel.m</file>
       <file>${PROJECT_ROOT}\src\+ui\ViewLayoutSettings.m</file>
       <file>${PROJECT_ROOT}\src\+ui\ViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\about.json</file>

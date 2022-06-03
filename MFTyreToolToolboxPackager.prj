@@ -7,7 +7,7 @@
     <param.summary>Create, fit and evaluate MF-Tyre models with a convenient MATLAB GUI.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\assets\img\MFTyreTool_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.2.0</param.version>
+    <param.version>1.2.1</param.version>
     <param.output>${PROJECT_ROOT}\MFTyreTool.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -36,6 +36,7 @@
 
 .github
 .gitmodules
+.gitattributes
 .gitignore
 .git
 src
