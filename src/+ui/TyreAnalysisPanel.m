@@ -13,6 +13,11 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         ShowSidebarStateButton      matlab.ui.control.StateButton
         Plot                   matlab.ui.componentcontainer.ComponentContainer
     end
+    properties (Access = protected)
+        ButtonsGridColumnWidthWithText = [repmat({110}, 1, 2) {'1x' 110}];
+        ButtonsGridColumnWidthOnlyIcon = [repmat({25}, 1, 2) {'1x' 25}];
+        ButtonsTexts cell
+    end
     events (NotifyAccess = public)
         TyreModelChanged
     end
@@ -44,6 +49,34 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
                     setupPlotCurves(obj)
                 case 'FrictionEllipse'
                     setupPlotEllipse(obj)
+            end
+        end
+        function onUiFigureSizeChanged(obj, ~, ~)
+            parent = obj.Parent;
+            while isa(parent, 'matlab.ui.container.GridLayout')
+                parent = parent.Parent;
+            end
+            width = parent.Position(3);
+            
+            buttonsGrid = obj.ButtonsGrid;
+            buttons = obj.ButtonsGrid.Children;
+            buttonWidths = obj.ButtonsGridColumnWidthWithText;
+            buttonWidths = buttonWidths(cellfun(@isnumeric, buttonWidths));
+            minWidthButtonsWithText = sum([buttonWidths{:}]) ...
+                + (numel(buttons)+2)*buttonsGrid.ColumnSpacing;
+            removeTextFromButtons = width < minWidthButtonsWithText;
+            if removeTextFromButtons
+                set(buttons, 'Text', '')
+                set(buttonsGrid, ...
+                    'ColumnWidth', obj.ButtonsGridColumnWidthOnlyIcon);
+            else
+                texts = obj.ButtonsTexts;
+                for i = 1:numel(buttons)
+                    btn = buttons(i);
+                    btn.Text = texts{i};
+                end
+                set(buttonsGrid, ...
+                    'ColumnWidth', obj.ButtonsGridColumnWidthWithText);
             end
         end
     end
@@ -103,12 +136,15 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.ShowSidebarStateButton = ...
                 uibutton(obj.ButtonsGrid, 'state', ...
                 'Icon', 'gears-solid.svg', ...
-                'Text', char.empty, ...
+                'Text', 'Show Settings', ...
                 'Value', true, ...
                 'Tooltip', 'Toggles visibility of axes sidebar', ...
                 'ValueChangedFcn', @obj.onShowSidebarStateButtonValueChanged);
             obj.ShowSidebarStateButton.Layout.Column = ...
                 numel(obj.ButtonsGrid.ColumnWidth);
+            
+            btns = obj.ButtonsGrid.Children;
+            obj.ButtonsTexts = {btns.Text};
         end
         function setupListeners(obj)
             addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
@@ -121,6 +157,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             setupButtons(obj)
             setupPlotCurves(obj)
             setupListeners(obj)
+            set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)
         end
         function update(obj)
         end
