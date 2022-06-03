@@ -69,6 +69,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     events (NotifyAccess = public)
         TyreModelChanged
+        TyreDataChanged
     end
     methods (Access = private)
         function onModelChanged(obj, ~, event)
@@ -76,6 +77,10 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             if ~isempty(obj.Model) || obj.AutoRefresh
                 updatePlot(obj)
             end
+        end
+        function onDataChanged(obj, ~, event)
+            measurements = event.Measurements;
+            obj.Measurements = measurements;
         end
         function onSettingsChanged(obj, source, event)
             tag = source.Tag;
@@ -689,6 +694,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function setupListeners(obj)
             addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
+            addlistener(obj, 'TyreDataChanged', @obj.onDataChanged);
         end
     end
     methods (Access = protected)

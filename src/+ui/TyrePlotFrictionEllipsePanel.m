@@ -13,6 +13,7 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
     end
     events (NotifyAccess = public)
         TyreModelChanged
+        TyreDataChanged
     end
     methods (Access = private)
         function onModelChanged(obj, ~, event)
@@ -76,6 +77,8 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
                     ax.INCLANGL = deg2rad(value);
                 case 'FZW'
                     ax.FZW = value;
+                case 'TYRESIDE'
+                    ax.TYRESIDE = value;
             end
         end
     end
@@ -237,6 +240,12 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
                 'Tag', 'FZW');
             uilabel(g, 'Text', '[N]', ...
                 'HorizontalAlignment', 'center');
+            
+            uilabel(g, 'Text', 'TYRESIDE');
+            uidropdown(g, 'Items', {'LEFT', 'RIGHT'}, ...
+                'ItemsData', {0, 1}, ...
+                'ValueChangedFcn', @obj.onSteadyStateSettingsChanged, ...
+                'Tag', 'TYRESIDE');
         end
         function setupAxes(obj)
             ax = ui.FrictionEllipseAxes(obj.MainGrid, ...

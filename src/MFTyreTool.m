@@ -918,10 +918,10 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             app.TyreMeasurements = measurements;
             app.TyreMeasurementsSelected = tydex.Measurement.empty;
             app.TyreMeasurementsSelectionIndices = logical.empty;
-            app.TyreAnalysisPanel.Measurements = measurements;
             
             e = events.TyreMeasurementsChanged(measurements, flags);
             notify(app.TyreMeasurementsPanel, 'MeasurementDataChanged', e);
+            notify(app.TyreAnalysisPanel, 'TyreDataChanged', e);
         end
         function setViewSettings(app, viewSettings)
             app.ViewSettings = viewSettings;

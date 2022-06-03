@@ -20,6 +20,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     events (NotifyAccess = public)
         TyreModelChanged
+        TyreDataChanged
     end
     methods (Access = private)
         function onModelChanged(obj, ~, event)
@@ -27,6 +28,12 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.Model = model;
             e = events.ModelChangedEventData(model);
             notify(obj.Plot, 'TyreModelChanged', e)
+        end
+        function onDataChanged(obj, ~, event)
+            measurements = event.Measurements;
+            obj.Measurements = measurements;
+            e = events.TyreMeasurementsChanged(measurements);
+            notify(obj.Plot, 'TyreDataChanged', e)
         end
     end
     methods(Access = private)
@@ -87,6 +94,8 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.Plot = ui.TyrePlotFrictionEllipsePanel(obj.GridPlot);
             e = events.ModelChangedEventData(obj.Model);
             notify(obj.Plot, 'TyreModelChanged', e)
+            e = events.TyreMeasurementsChanged(obj.Measurements);
+            notify(obj.Plot, 'TyreDataChanged', e)
         end
         function setupPlotCurves(obj)
             delete(obj.GridPlot)
@@ -94,6 +103,8 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.Plot = ui.TyrePlotCurvesPanel(obj.GridPlot);
             e = events.ModelChangedEventData(obj.Model);
             notify(obj.Plot, 'TyreModelChanged', e)
+            e = events.TyreMeasurementsChanged(obj.Measurements);
+            notify(obj.Plot, 'TyreDataChanged', e)
         end
         function setupGrid(obj)
             obj.Grid = uigridlayout(obj, ...
@@ -148,6 +159,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function setupListeners(obj)
             addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
+            addlistener(obj, 'TyreDataChanged', @obj.onDataChanged);
         end
     end
     methods (Access = protected)

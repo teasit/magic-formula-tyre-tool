@@ -12,6 +12,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
         INFLPRES double = 80E3
         INCLANGL double = 0
         FZW double = 1E3
+        TYRESIDE double = 0
     end
     properties
         Limits double = [5000 5000]
@@ -105,6 +106,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             P = obj.INFLPRES;
             FZ = obj.FZW;
             IA = obj.INCLANGL;
+            TS = obj.TYRESIDE;
             
             colors = get(ax, 'colororder');
             
@@ -112,7 +114,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             for i = 1:n_SA
                 SA = SA_const(i);
                 SX = SX_sweep;
-                [FX,FY] = model.eval(SA,SX,IA,P,FZ,0);                
+                [FX,FY] = model.eval(SA,SX,IA,P,FZ,TS);                
                 h(i) = plot(ax, FY, FX, 'k-', 'LineWidth', lineWidth, ...
                     'Marker', marker, 'MarkerSize', markerSize, ...
                     'Color', colors(1,:));
@@ -129,7 +131,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             for j = 1:n_SX
                 SA = SA_sweep;
                 SX = SX_const(j);
-                [FX,FY] = model.eval(SA,SX,IA,P,FZ,0);
+                [FX,FY] = model.eval(SA,SX,IA,P,FZ,TS);
                 h(j) = plot(ax, FY, FX, 'k-', 'LineWidth', lineWidth, ...
                     'Marker', marker, 'MarkerSize', markerSize, ...
                     'Color', colors(2,:));
