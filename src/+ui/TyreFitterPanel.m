@@ -13,6 +13,8 @@ classdef TyreFitterPanel < matlab.ui.componentcontainer.ComponentContainer
     
     properties (Access = private, Transient, NonCopyable)
         Grid                        matlab.ui.container.GridLayout
+        MainGrid                    matlab.ui.container.GridLayout
+        Panel                       matlab.ui.container.Panel
         FittingModesPanel           ui.TyreFitterFittingModesPanel
         SolverSettingsPanel         ui.TyreFitterSolverSettingsPanel
         RunStateButton              matlab.ui.control.Button
@@ -20,10 +22,6 @@ classdef TyreFitterPanel < matlab.ui.componentcontainer.ComponentContainer
     
     properties (Dependent, Access = public)
         Settings optim.options.Fmincon
-    end
-    
-    properties (Constant, Access = protected)
-        PanelTitle char = 'Fitter Settings'
     end
     
     methods (Access = private)
@@ -51,7 +49,14 @@ classdef TyreFitterPanel < matlab.ui.componentcontainer.ComponentContainer
             % Position only used for standalone-testing.
             obj.Position = [0 0 400 400];
             
-            obj.Grid = uigridlayout(obj, ...
+            obj.MainGrid = uigridlayout(obj, ...
+                'RowHeight', {'1x'}, ...
+                'ColumnWidth', {'1x'}, ...
+                'Padding', zeros(1,4));
+
+            obj.Panel = uipanel(obj.MainGrid);
+
+            obj.Grid = uigridlayout(obj.Panel, ...
                 'RowHeight', {80, 120, 'fit'}, ...
                 'ColumnWidth', {'1x'}, ...
                 'Padding', 5*ones(1,4), ...
