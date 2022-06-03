@@ -4,11 +4,32 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
     properties
         Model mftyre.Model = mftyre.v62.Model.empty
     end
+    properties
+        INFLPRES double = 80E3
+        INCLANGL double = 0
+        FZW double = 1E3
+    end
+    properties
+        Limits double = [5000 5000]
+    end
+    properties
+        AxisEqual logical = true
+        AxisManualLimits logical = true
+        LegendOn logical = true
+        Marker char = 'none'
+        MarkerSize double = 10
+        LineWidth double = 1
+    end
     properties (Access = private, Transient, NonCopyable)
         Grid matlab.ui.container.GridLayout
         Axes matlab.ui.control.UIAxes
     end
     events (HasCallbackProperty, NotifyAccess = protected)
+    end
+    methods
+        function refresh(obj)
+            updateAxes(obj)
+        end
     end
     methods (Access = protected)
         function setup(obj)
@@ -23,7 +44,8 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             ax = uiaxes(obj.Grid);
             grid(ax, 'on')
             hold(ax, 'on')
-            axis(ax,'equal')
+            xlabel(ax, 'FY / N')
+            ylabel(ax, 'FX / N')
             obj.Axes = ax;
         end
         function update(obj)
@@ -31,29 +53,95 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             if isempty(model)
                 return
             end
+            updateAxes(obj)
+        end
+        function updateAxes(obj)
+            model = obj.Model;
+            
             ax = obj.Axes;
             cla(ax)
-
-            slipangl = deg2rad(-15:1:15);
-            for i = 1:numel(slipangl)
-                SA = slipangl(i);
-                SX = linspace(-1,1);
-                IA = deg2rad(0);
-                P = 80E3;
-                FZ = 1000;
-                [FX,FY] = model.eval(SA,SX,IA,P,FZ,0);
-                plot(ax, FX, FY, 'r-')
+            
+            if obj.AxisEqual
+                axis(ax, 'equal')
+            else
+                axis(ax, 'normal')
             end
             
-            longslip = -0.2:0.005:0.2;
-            for i = 1:numel(longslip)
-                SA = deg2rad(linspace(-30, 30));
-                SX = longslip(i);
-                IA = deg2rad(0);
-                P = 80E3;
-                FZ = 1000;
+            if obj.AxisManualLimits
+                limits = obj.Limits;
+                X = [-1, 1]*limits(1);
+                Y = [-1, 1]*limits(2);
+                xlim(X)
+                ylim(Y)
+            else
+                xlim('auto')
+                ylim('auto')
+            end
+            
+            legend off
+            
+            n = 500;
+            marker = obj.Marker;
+            markerSize = obj.MarkerSize;
+            lineWidth = obj.LineWidth;
+            
+            SA_sweep = deg2rad(linspace(-30, 30, n));
+            SA_const = deg2rad(-15:3:15);
+            
+            SX_sweep = linspace(-1, 1, n);
+            SX_const = -0.2:0.02:0.2;
+            
+            n_SA = numel(SA_const);
+            n_SX = numel(SX_const);
+            
+            P = obj.INFLPRES;
+            FZ = obj.FZW;
+            IA = obj.INCLANGL;
+            
+            colors = get(ax, 'colororder');
+            
+            h = gobjects(n_SA, 1);
+            for i = 1:n_SA
+                SA = SA_const(i);
+                SX = SX_sweep;
+                [FX,FY] = model.eval(SA,SX,IA,P,FZ,0);                
+                h(i) = plot(ax, FY, FX, 'k-', 'LineWidth', lineWidth, ...
+                    'Marker', marker, 'MarkerSize', markerSize, ...
+                    'Color', colors(1,:));
+                SA = rad2deg(SA)*ones(1,n);
+                SX = SX*100;
+                h(i).DataTipTemplate.DataTipRows = [
+                    dataTipTextRow('\alpha', SA, '%.1f deg')
+                    dataTipTextRow('S_X', SX, '%.1f %%')
+                    ];
+            end
+            hSlipRatioSweeps = h(end);
+
+            h = gobjects(n_SX, 1);
+            for j = 1:n_SX
+                SA = SA_sweep;
+                SX = SX_const(j);
                 [FX,FY] = model.eval(SA,SX,IA,P,FZ,0);
-                plot(ax, FX, FY, 'b-')
+                h(j) = plot(ax, FY, FX, 'k-', 'LineWidth', lineWidth, ...
+                    'Marker', marker, 'MarkerSize', markerSize, ...
+                    'Color', colors(2,:));
+                SA = rad2deg(SA);
+                SX = SX*100*ones(1,n);
+                h(j).DataTipTemplate.DataTipRows = [
+                    dataTipTextRow('\alpha', SA, '%.1f deg')
+                    dataTipTextRow('S_X', SX, '%.1f %%')
+                    ];
+            end
+            hSlipAngleSweeps = h(end);
+            
+            if obj.LegendOn
+                subset = [hSlipRatioSweeps hSlipAngleSweeps];
+                labels = {
+                    'SLIPANGL = const.'
+                    'LONGSLIP = const.'};
+                legend(subset, labels, ...
+                    'Location', 'bestoutside', ...
+                    'Orientation', 'horizontal')
             end
         end
     end

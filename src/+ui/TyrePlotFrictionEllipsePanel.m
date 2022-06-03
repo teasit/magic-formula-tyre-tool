@@ -20,6 +20,50 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
             obj.Model = model;
             obj.Axes.Model = model;
         end
+        function onPlotSettingsChanged(obj, source, event)
+            ax = obj.Axes;
+            tag = source.Tag;
+            switch tag
+                case 'AxisEqual'
+                    value = event.Value;
+                    ax.AxisEqual = value;
+                case 'AxisManualLimits'
+                    value = event.Value;
+                    ax.AxisManualLimits = value;
+                case 'XLimit'
+                    value = event.Value;
+                    ax.Limits(1) = value;
+                case 'YLimit'
+                    value = event.Value;
+                    ax.Limits(2) = value;
+                case 'Legend'
+                    value = event.Value;
+                    ax.LegendOn = value;
+                case 'Marker'
+                    value = event.Value;
+                    ax.Marker = value;
+                case 'MarkerSize'
+                    value = event.Value;
+                    ax.MarkerSize = value;
+                case 'LineWidth'
+                    value = event.Value;
+                    ax.LineWidth = value;
+            end
+        end
+        function onSteadyStateSettingsChanged(obj, source, event)
+            ax = obj.Axes;
+            tag = source.Tag;
+            value = event.Value;
+            switch tag
+                case 'INFLPRES'
+                    bar2pascal = @(x) x*1E5;
+                    ax.INFLPRES = bar2pascal(value);
+                case 'INCLANGL'
+                    ax.INCLANGL = deg2rad(value);
+                case 'FZW'
+                    ax.FZW = value;
+            end
+        end
     end
     methods(Access = protected)
         function updateSidebarState(obj)
@@ -61,11 +105,93 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
                 'BorderType', 'none');
             g = uigridlayout(p, ...
                 'RowHeight', repmat({'fit'}, 1, 6), ...
+                'ColumnWidth', {'fit', 'fit'}, ...
+                'ColumnSpacing', 10, ...
+                'Padding', 10*ones(1,4), ...
+                'Scrollable', false);
+            
+%             uilabel(g, 'Text', 'Legend');
+%             uibutton(g, 'state', 'Text', 'On', 'Enable', 'off', ...
+%                 'ValueChangedFcn', @obj.onPlotSettingsChanged, ...
+%                 'Tag', 'Legend');
+%             
+%             uilabel(g, 'Text', 'Hold');
+%             uibutton(g, 'state', 'Text', 'On', 'Enable', 'off');
+            
+            uilabel(g, 'Text', 'Axis');
+            uibutton(g, 'state', 'Text', 'Equal', 'Value', true, ...
+                'Tag', 'AxisEqual', ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged);
+            
+            uilabel(g, 'Text', 'Limits');
+            uibutton(g, 'state', 'Text', 'Manual', 'Value', true, ...
+                'Tag', 'AxisManualLimits', ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged);
+           
+            uilabel(g, 'Text', 'X-Limit');
+            uieditfield(g, 'numeric', 'Value', 4000, ...
+                'Tag', 'XLimit', ...
+                'Limits', [0 100E3], 'LowerLimitInclusive', false, ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged);
+            
+            uilabel(g, 'Text', 'Y-Limit');
+            uieditfield(g, 'numeric', 'Value', 4000, ...
+                'Tag', 'YLimit', ...
+                'Limits', [0 100E3], 'LowerLimitInclusive', false, ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged);
+            
+            uilabel(g, 'Text', 'Marker');
+            markers = {'none', '.', '+', 'o', '*', 'x', 'square', ...
+                'diamond', '^', 'v', '>', '<', 'pentagram', 'hexagram'};
+            uidropdown(g, 'Items', markers, ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged, ...
+                'Tag', 'Marker');
+            
+            uilabel(g, 'Text', 'Marker Size');
+            uispinner(g, 'Value', 15, ...
+                'Limits', [0 100], 'LowerLimitInclusive', 'off', ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged, ...
+                'Tag', 'MarkerSize');
+            
+            uilabel(g, 'Text', 'Line Width');
+            uispinner(g, 'Value', 1, ...
+                'Limits', [0 10], 'LowerLimitInclusive', 'off', ...
+                'ValueChangedFcn', @obj.onPlotSettingsChanged, ...
+                'Tag', 'LineWidth');
+        end
+        function setupSteadyStateSettings(obj)
+            p = uipanel(obj.SidePanelGrid, ...
+                'Title', 'Steady-State Settings', ...
+                'BorderType', 'none');
+            g = uigridlayout(p, ...
+                'RowHeight', repmat({'fit'}, 1, 6), ...
                 'ColumnWidth', {'fit', 'fit', 'fit'}, ...
                 'ColumnSpacing', 10, ...
                 'Padding', 10*ones(1,4), ...
                 'Scrollable', false);
-            uibutton(g, 'Text', '<PLACEHOLDER>');
+            
+            uilabel(g, 'Text', 'INCLANGL');
+            uispinner(g, 'Value', 0, 'Step', 1, 'Limits', [-90 90], ...
+                'ValueChangedFcn', @obj.onSteadyStateSettingsChanged, ...
+                'Tag', 'INCLANGL');
+            uilabel(g, 'Text', '[deg]', ...
+                'HorizontalAlignment', 'center');
+            
+            uilabel(g, 'Text', 'INFLPRES');
+            uispinner(g, 'Value', 0.8, 'Step', 0.1, ...
+                'ValueChangedFcn', @obj.onSteadyStateSettingsChanged, ...
+                'Limits', [0 100], 'LowerLimitInclusive', 'off', ...
+                'Tag', 'INFLPRES');
+            uilabel(g, 'Text', '[bar]', ...
+                'HorizontalAlignment', 'center');
+            
+            uilabel(g, 'Text', 'FZW');
+            uispinner(g, 'Value', 1000, 'Step', 100, ...
+                'ValueChangedFcn', @obj.onSteadyStateSettingsChanged, ...
+                'Limits', [0 100E3], 'LowerLimitInclusive', 'off', ...
+                'Tag', 'FZW');
+            uilabel(g, 'Text', '[N]', ...
+                'HorizontalAlignment', 'center');
         end
         function setupAxes(obj)
             ax = ui.FrictionEllipseAxes(obj.MainGrid, ...
@@ -83,6 +209,7 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
             setupAxes(obj)
             setupSidePanel(obj)
             setupPlotSettings(obj)
+            setupSteadyStateSettings(obj)
             setupListeners(obj)
         end
         function update(obj)

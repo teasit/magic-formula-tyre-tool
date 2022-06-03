@@ -11,7 +11,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             'SLIPANGL'
             'INCLANGL'
             'INFLPRES'
-            'FZW'}
+            'FZW'}'
         XAxisRangeLONGSLIP (1,2) = [-1 1]
         XAxisRangeSLIPANGL (1,2) = [-15 15]
         XAxisRangeINCLANGL (1,2) = [-6 6]
@@ -586,38 +586,31 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                 'Tooltip', 'Plot will update on new model changes.', ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
             
-            obj.ShowLegendStateButtonLabel = uilabel(grid);
-            obj.ShowLegendStateButtonLabel.Text = 'Legend';
-            obj.ShowLegendStateButton = uibutton(grid, 'state');
-            obj.ShowLegendStateButton.Text = 'On';
-            obj.ShowLegendStateButton.Value = true;
-            obj.ShowLegendStateButton.Tag = 'ShowLegendStateButton';
-            obj.ShowLegendStateButton.ValueChangedFcn = ...
-                @obj.onSettingsChanged;
+            obj.ShowLegendStateButtonLabel = uilabel(grid, 'Text', 'Legend');
+            obj.ShowLegendStateButton = uibutton(grid, 'state', ...
+                'Text', 'On', ...
+                'Value', true, ...
+                'Tag', 'ShowLegendStateButton', ...
+                'ValueChangedFcn', @obj.onSettingsChanged);
             
-            obj.HoldOnSettingLabel = uilabel(grid);
-            obj.HoldOnSettingLabel.Text = 'Hold';
-            obj.HoldOnSettingStateButton = uibutton(grid, 'state');
-            obj.HoldOnSettingStateButton.Text = 'On';
-            obj.HoldOnSettingStateButton.ValueChangedFcn = ...
-                @obj.onSettingsChanged;
-            obj.HoldOnSettingStateButton.Tag = 'HoldOnSettingStateButton';
+            obj.HoldOnSettingLabel = uilabel(grid, 'Text', 'Hold');
+            obj.HoldOnSettingStateButton = uibutton(grid, 'state', ...
+                'Text', 'On', ...
+                'ValueChangedFcn', @obj.onSettingsChanged, ...
+                'Tag', 'HoldOnSettingStateButton');
             
-            obj.DataShowSettingLabel = uilabel(grid);
-            obj.DataShowSettingLabel.Text = 'Data';
-            obj.DataShowSettingStateButton = uibutton(grid, 'state');
-            obj.DataShowSettingStateButton.Text = 'Show';
-            obj.DataShowSettingStateButton.ValueChangedFcn = ...
-                @obj.onSettingsChanged;
-            obj.DataShowSettingStateButton.Tag = 'DataShowSettingStateButton';
+            obj.DataShowSettingLabel = uilabel(grid, 'Text', 'Data');
+            obj.DataShowSettingStateButton = uibutton(grid, 'state', ...
+                'Text', 'Show', ...
+                'ValueChangedFcn', @obj.onSettingsChanged, ...
+                'Tag', 'DataShowSettingStateButton');
             
-            obj.ModelShowSettingLabel = uilabel(grid);
-            obj.ModelShowSettingLabel.Text = 'Model';
-            obj.ModelShowSettingStateButton = uibutton(grid, 'state');
-            obj.ModelShowSettingStateButton.Text = 'Show';
-            obj.ModelShowSettingStateButton.ValueChangedFcn = ...
-                @obj.onSettingsChanged;
-            obj.ModelShowSettingStateButton.Tag = 'ModelShowSettingStateButton';
+            obj.ModelShowSettingLabel = uilabel(grid, 'Text', 'Model');
+            obj.ModelShowSettingStateButton = uibutton(grid, 'state', ...
+                'Value', true, ...
+                'Text', 'Show', ...
+                'ValueChangedFcn', @obj.onSettingsChanged, ...
+                'Tag', 'ModelShowSettingStateButton');
             
             obj.XAxisSettingLabel = uilabel(grid);
             obj.XAxisSettingLabel.Text = 'X-Axis';
