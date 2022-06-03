@@ -2,7 +2,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
     %FRICTIONELLIPSEAXES Axes to plot friction ellipse for tyre model.
     
     properties
-        TyreModel mftyre.Model = mftyre.v62.Model.empty
+        Model mftyre.Model = mftyre.v62.Model.empty
     end
     properties (Access = private, Transient, NonCopyable)
         Grid matlab.ui.container.GridLayout
@@ -27,7 +27,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             obj.Axes = ax;
         end
         function update(obj)
-            model = obj.TyreModel;
+            model = obj.Model;
             if isempty(model)
                 return
             end

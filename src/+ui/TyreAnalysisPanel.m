@@ -3,13 +3,15 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     
     properties
         Measurements tydex.Measurement = tydex.Measurement.empty
+        Model mftyre.Model = mftyre.v62.Model.empty
     end
     properties (Access = private, Transient, NonCopyable)
-        Grid                    matlab.ui.container.GridLayout
-        ButtonsPlotType         matlab.ui.control.StateButton
-        ButtonsGrid             matlab.ui.container.GridLayout
-        ShowSidebarStateButton  matlab.ui.control.StateButton
-        PlotCurvesPanel         ui.TyrePlotCurvesPanel
+        Grid                        matlab.ui.container.GridLayout
+        GridPlot                    matlab.ui.container.GridLayout
+        ButtonsPlotType             matlab.ui.control.StateButton
+        ButtonsGrid                 matlab.ui.container.GridLayout
+        ShowSidebarStateButton      matlab.ui.control.StateButton
+        Plot                   matlab.ui.componentcontainer.ComponentContainer
     end
     events (NotifyAccess = public)
         TyreModelChanged
@@ -17,14 +19,15 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     methods (Access = private)
         function onModelChanged(obj, ~, event)
             model = event.Model;
+            obj.Model = model;
             e = events.ModelChangedEventData(model);
-            notify(obj.PlotCurvesPanel, 'TyreModelChanged', e)
+            notify(obj.Plot, 'TyreModelChanged', e)
         end
     end
     methods(Access = private)
         function onShowSidebarStateButtonValueChanged(obj, ~, event)
             show = event.Value;
-            obj.PlotCurvesPanel.ShowSidebar = show;
+            obj.Plot.ShowSidebar = show;
         end
         function onButtonsPlotTypeValueChanged(obj, origin, ~)
             buttons = obj.ButtonsPlotType;
@@ -34,17 +37,43 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             set(buttons(~I), 'Enable', 'on')
             set(buttons(I), 'Value', true)
             set(buttons(I), 'Enable', 'off')
+            
+            plotType = buttonPressed.Tag;
+            switch plotType
+                case 'TyreCurves'
+                    setupPlotCurves(obj)
+                case 'FrictionEllipse'
+                    setupPlotEllipse(obj)
+            end
         end
     end
     methods(Access = protected)
-        function setupPlot(obj)
-            obj.PlotCurvesPanel = ui.TyrePlotCurvesPanel(obj.Grid);
+        function setupPlotEllipse(obj)
+            delete(obj.GridPlot)
+            setupGridPlot(obj)
+            obj.Plot = ui.TyrePlotFrictionEllipsePanel(obj.GridPlot);
+            e = events.ModelChangedEventData(obj.Model);
+            notify(obj.Plot, 'TyreModelChanged', e)
+        end
+        function setupPlotCurves(obj)
+            delete(obj.GridPlot)
+            setupGridPlot(obj)
+            obj.Plot = ui.TyrePlotCurvesPanel(obj.GridPlot);
+            e = events.ModelChangedEventData(obj.Model);
+            notify(obj.Plot, 'TyreModelChanged', e)
         end
         function setupGrid(obj)
             obj.Grid = uigridlayout(obj, ...
                 'RowHeight', {22,'1x'}, ...
                 'ColumnWidth', {'1x'}, ...
                 'ColumnSpacing', 10, ...
+                'Padding', 0*ones(1,4), ...
+                'Scrollable', false);
+        end
+        function setupGridPlot(obj)
+            obj.GridPlot = uigridlayout(obj.Grid, ...
+                'RowHeight', {'1x'}, ...
+                'ColumnWidth', {'1x'}, ...
                 'Padding', 0*ones(1,4), ...
                 'Scrollable', false);
         end
@@ -57,11 +86,13 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             
             btn1 = uibutton(obj.ButtonsGrid, 'state', ...
                 'Text', 'Tyre Curves', ...
+                'Tag', 'TyreCurves', ...
                 'Icon', 'plot_curves_icon.svg', ...
                 'Value', true, ...
                 'Enable', 'off');
             btn2 = uibutton(obj.ButtonsGrid, 'state', ...
                 'Text', 'Friction Ellipse', ...
+                'Tag', 'FrictionEllipse', ...
                 'Icon', 'plot_friction_ellipse_icon.svg', ...
                 'Value', false, ...
                 'Enable', 'on');
@@ -88,7 +119,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             set(obj, 'Position', [0 0 800 400])
             setupGrid(obj)
             setupButtons(obj)
-            setupPlot(obj)
+            setupPlotCurves(obj)
             setupListeners(obj)
         end
         function update(obj)
