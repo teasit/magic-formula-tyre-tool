@@ -5,6 +5,10 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
         Model mftyre.Model = mftyre.v62.Model.empty
     end
     properties
+        SLIPANGL_Max double = 15
+        SLIPANGL_Step double = 3
+        LONGSLIP_Max double = 0.15
+        LONGSLIP_Step double = 0.01
         INFLPRES double = 80E3
         INCLANGL double = 0
         FZW double = 1E3
@@ -80,16 +84,20 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             
             legend off
             
-            n = 500;
+            n = 200;
             marker = obj.Marker;
             markerSize = obj.MarkerSize;
             lineWidth = obj.LineWidth;
             
-            SA_sweep = deg2rad(linspace(-30, 30, n));
-            SA_const = deg2rad(-15:3:15);
+            SA_max = obj.SLIPANGL_Max;
+            SA_step = obj.SLIPANGL_Step;
+            SA_sweep = deg2rad(linspace(-SA_max, SA_max, n));
+            SA_const = deg2rad(-SA_max:SA_step:SA_max);
             
-            SX_sweep = linspace(-1, 1, n);
-            SX_const = -0.2:0.02:0.2;
+            SX_max = obj.LONGSLIP_Max;
+            SX_step = obj.LONGSLIP_Step;
+            SX_sweep = linspace(-SX_max, SX_max, n);
+            SX_const = -SX_max:SX_step:SX_max;
             
             n_SA = numel(SA_const);
             n_SX = numel(SX_const);
