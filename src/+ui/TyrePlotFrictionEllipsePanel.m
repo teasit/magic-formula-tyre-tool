@@ -24,13 +24,13 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
     methods(Access = protected)
         function updateSidebarState(obj)
             show = obj.ShowSidebar;
-            grid = obj.SidePanelGrid;
+            sidebar = obj.SidePanel;
             axes = obj.Axes;
             if show
-                set(grid, 'Visible', 'on')
+                set(sidebar, 'Visible', 'on')
                 axes.Layout.Column = 1;
             else
-                set(grid, 'Visible', 'off')
+                set(sidebar, 'Visible', 'off')
                 axes.Layout.Column = [1 2];
             end
         end
@@ -45,13 +45,27 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
                 'Scrollable', false);
         end
         function setupSidePanel(obj)
-            obj.SidePanelGrid = uigridlayout(obj.MainGrid, ...
+            obj.SidePanel = uipanel(obj.MainGrid);
+            obj.SidePanel.Layout.Column = 2;
+            
+            obj.SidePanelGrid = uigridlayout(obj.SidePanel, ...
                 'RowHeight', repmat({'fit'}, 1, 2), ...
                 'ColumnWidth', {'1x'}, ...
                 'ColumnSpacing', 0, ...
                 'Padding', zeros(1,4), ...
                 'Scrollable', true);
-            obj.SidePanelGrid.Layout.Column = 2;
+        end
+        function setupPlotSettings(obj)
+            p = uipanel(obj.SidePanelGrid, ...
+                'Title', 'Plot Settings', ...
+                'BorderType', 'none');
+            g = uigridlayout(p, ...
+                'RowHeight', repmat({'fit'}, 1, 6), ...
+                'ColumnWidth', {'fit', 'fit', 'fit'}, ...
+                'ColumnSpacing', 10, ...
+                'Padding', 10*ones(1,4), ...
+                'Scrollable', false);
+            uibutton(g, 'Text', '<PLACEHOLDER>');
         end
         function setupAxes(obj)
             ax = ui.FrictionEllipseAxes(obj.MainGrid, ...
@@ -68,6 +82,7 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
             setupMainGrid(obj)
             setupAxes(obj)
             setupSidePanel(obj)
+            setupPlotSettings(obj)
             setupListeners(obj)
         end
         function update(obj)

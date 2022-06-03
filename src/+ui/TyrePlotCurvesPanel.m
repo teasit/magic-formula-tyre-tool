@@ -274,13 +274,13 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
     methods(Access = protected)
         function updateSidebarState(obj)
             show = obj.ShowSidebar;
-            grid = obj.SidePanelGrid;
+            sidebar = obj.SidePanel;
             axes = obj.Axes;
             if show
-                set(grid, 'Visible', 'on')
+                set(sidebar, 'Visible', 'on')
                 axes.Layout.Column = 1;
             else
-                set(grid, 'Visible', 'off')
+                set(sidebar, 'Visible', 'off')
                 axes.Layout.Column = [1 2];
             end
         end
@@ -666,13 +666,15 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.SteadyStateSettingsPanelGrid = grid;
         end
         function setupSidePanel(obj)
-            obj.SidePanelGrid = uigridlayout(obj.MainGrid, ...
+            obj.SidePanel = uipanel(obj.MainGrid);
+            obj.SidePanel.Layout.Column = 2;
+            
+            obj.SidePanelGrid = uigridlayout(obj.SidePanel, ...
                 'RowHeight', repmat({'fit'}, 1, 2), ...
                 'ColumnWidth', {'1x'}, ...
                 'ColumnSpacing', 0, ...
                 'Padding', zeros(1,4), ...
                 'Scrollable', true);
-            obj.SidePanelGrid.Layout.Column = 2;
             
             obj.PlotSettingsPanel = uipanel(obj.SidePanelGrid, ...
                 'Title', 'Plot Settings', ...
