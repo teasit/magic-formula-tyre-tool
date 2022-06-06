@@ -5,10 +5,8 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         Model mftyre.Model = mftyre.v62.Model.empty
         Fitter mftyre.v62.Fitter = mftyre.v62.Fitter.empty
     end
-    properties (Access = private)
-        UiChart ui.TyreModelPanelChart
-    end
     properties (Access = protected)
+        Settings settings.AppSettings
         ButtonsGridColumnWidthWithText = [repmat({110}, 1, 7) {'1x' 110}];
         ButtonsGridColumnWidthOnlyIcon = [repmat({25}, 1, 7) {'1x' 25}];
         ButtonsTexts cell
@@ -33,7 +31,6 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
     events (HasCallbackProperty, NotifyAccess = protected)
         FitterSettingsChanged
         FitterStartRequested
-        FitterFittingModesChanged
         TyreModelClearRequested
         TyreModelEdited
         TyreModelNewRequested
@@ -45,9 +42,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     events (NotifyAccess = public)
         TyreModelChanged
-        TyreFitterModesChanged
         TyreModelFitterFinished
-        ViewSettingsChanged
     end
     methods(Access = private)
         function onSaveModelRequested(obj, ~, ~)
@@ -59,8 +54,8 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         function onTyreModelChanged(obj, ~, event)
             model = event.Model;
             obj.Model = model;
-            evntdata = events.ModelChangedEventData(model);
-            notify(obj.TyreParametersTable, 'TyreModelChanged', evntdata)
+            e = events.ModelChangedEventData(model);
+            notify(obj.TyreParametersTable, 'TyreModelChanged', e)
         end
         function onNewModelRequested(obj, ~, ~)
             notify(obj, 'TyreModelNewRequested')
@@ -72,11 +67,10 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             notify(obj, 'TyreModelResetRequested')
         end
         function onFitterStateButtonChanged(obj, ~, event)
-            if event.Value
-                obj.UiChart.ShowFitterPanel;
-            else
-                obj.UiChart.HideFitterPanel;
-            end
+            s = obj.Settings.View.TyreModelPanel;
+            showFitter = event.Value;
+            s.ShowSidebar = showFitter;
+            updateSidebar(obj)
         end
         function onFitterSettingsChanged(obj, ~, event)
             arguments
@@ -86,22 +80,11 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             end
             obj.Fitter.Options = event.Settings;
         end
-        function onFitterFittingModesChanged(obj, ~, event)
-            modes = event.FitModes;
-            obj.TyreParametersTable.FitModes = modes;
-            evntdata = events.FittingModesChangedEventData(modes);
-            notify(obj, 'FitterFittingModesChanged', evntdata)
-        end
         function onTyreModelFitterFinished(obj, ~, event)
             paramsFit = event.ParametersFitted;
             e = events.TyreModelFitterFinished(paramsFit);
             notify(obj.TyreParametersTable, 'TyreModelFitterFinished', e)
-            obj.UiChart.TyreModelFitted()
-        end
-        function onViewSettingsChanged(obj, ~, event)
-            settings = event.Settings;
-            table = obj.TyreParametersTable;
-            table.ViewSettings = settings.TyreParametersTableViewSettings;
+            set(obj.ApplyFittedButton, 'Enable', true)
         end
         function onFitterStartRequested(obj, ~, ~)
             notify(obj, 'FitterStartRequested')
@@ -114,12 +97,6 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function onTyreModelEdited(obj, ~, ~)
             notify(obj, 'TyreModelEdited')
-        end
-        function onTyreFitterModesChanged(obj, ~, event)
-            fitmodes = event.FitModes;
-            obj.TyreParametersTable.FitModes = fitmodes;
-            e = events.FittingModesChangedEventData(fitmodes);
-            notify(obj.FitterPanel, 'TyreFitterModesChanged', e)
         end
         function onUiFigureSizeChanged(obj, ~, ~)
             parent = obj.Parent;
@@ -222,12 +199,12 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.TyreParametersTable.TyreModelEditedFcn = @obj.onTyreModelEdited;
         end
         function setupMainGrid(obj)
-            obj.MainGrid = uigridlayout(obj);
-            obj.MainGrid.RowHeight = {22,'1x'};
-            obj.MainGrid.ColumnWidth = {'1x', 'fit'};
-            obj.MainGrid.ColumnSpacing = 10;
-            obj.MainGrid.Padding = zeros(1,4);
-            obj.MainGrid.Scrollable = false;
+            obj.MainGrid = uigridlayout(obj, ...
+                'RowHeight', {22,'1x'}, ...
+                'ColumnWidth', {'1x', 'fit'}, ...
+                'ColumnSpacing', 10, ...
+                'Padding', zeros(1,4), ...
+                'Scrollable', false);
         end
         function setupSidePanel(obj)
             obj.SidePanelGrid = uigridlayout(obj.MainGrid, ...
@@ -242,9 +219,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             
             obj.FitterPanel = ui.TyreFitterPanel(obj.SidePanelGrid, ...
                 'FitterSolverSettingsChangedFcn', ...
-                @obj.onFitterSettingsChanged, ...
-                'FitterFittingModesChangedFcn', ...
-                @obj.onFitterFittingModesChanged, ...
+                @obj.onFitterSettingsChanged, .....
                 'FitterStartRequestedFcn', ...
                 @obj.onFitterStartRequested);
         end
@@ -252,29 +227,48 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             addlistener(obj, 'TyreModelChanged', @obj.onTyreModelChanged);
             addlistener(obj, 'TyreModelFitterFinished', ...
                 @obj.onTyreModelFitterFinished);
-            addlistener(obj, 'ViewSettingsChanged', ...
-                @obj.onViewSettingsChanged);
-            addlistener(obj, 'TyreFitterModesChanged', ...
-                @obj.onTyreFitterModesChanged);
         end
     end
     methods (Access = protected)
         function setup(obj)
             set(obj, 'Position', [0 0 800 400])
+            obj.Settings = settings.AppSettings();
             setupMainGrid(obj)
             setupButtons(obj)
             setupTyreParametersTable(obj)
             setupSidePanel(obj)
             setupListeners(obj)
-            obj.UiChart = ui.TyreModelPanelChart('obj', obj);
             set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)
         end
         function update(obj)
-            chart = obj.UiChart;
-            if ~isempty(obj.Model)
-                chart.TyreModelLoaded()
+            updateButtons(obj)
+            updateSidebar(obj)
+        end
+        function updateSidebar(obj)
+            s = obj.Settings.View.TyreModelPanel;
+            showSidebar = s.ShowSidebar;
+            set(obj.SidePanelGrid, 'Visible', showSidebar)
+            set(obj.FitterStateButton, 'Value', showSidebar)
+            if showSidebar
+                obj.TyreParametersTable.Layout.Column = 1;
             else
-                chart.TyreModelCleared()
+                obj.TyreParametersTable.Layout.Column = ...
+                    [1 numel(obj.MainGrid.ColumnWidth)];
+            end
+        end
+        function updateButtons(obj)
+            buttons = [
+                obj.SaveModelButton
+                obj.ClearModelButton
+                obj.ResetModelButton
+                obj.StructToMatButton
+                ];
+            hasModelLoaded = ~isempty(obj.Model);
+            enable = matlab.lang.OnOffSwitchState(hasModelLoaded);
+            set(buttons, 'Enable', char(enable))
+            set(obj.SidePanelGrid, 'Visible', hasModelLoaded)
+            if ~hasModelLoaded
+                set(obj.ApplyFittedButton, 'Enable', false)
             end
         end
     end

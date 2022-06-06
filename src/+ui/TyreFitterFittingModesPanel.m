@@ -1,8 +1,12 @@
 classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentContainer
     %FitterFITTINGMODESPANEL Panel to configure fitting modes for MFTyre fitter.
     
-    properties
+    properties (SetAccess = protected)
         FitModes mftyre.v62.FitMode
+    end
+    
+    properties (Access = private)
+        Settings settings.AppSettings
     end
     
     events (HasCallbackProperty, NotifyAccess = protected)
@@ -10,6 +14,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
     end
     
     properties (Access = private, Transient, NonCopyable)
+        Panel               matlab.ui.container.Panel
         Grid                matlab.ui.container.GridLayout
         Checkboxes          matlab.ui.control.CheckBox
     end
@@ -33,18 +38,28 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
                 fitModesSelected(I) = [];
                 obj.FitModes = fitModesSelected;
             end
-            evntdata = events.FittingModesChangedEventData(obj.FitModes);
-            notify(obj, 'SelectionChanged', evntdata)
+            
+            obj.Settings.Fitter.FitModes = fitModesSelected;
+            
+            e = events.FittingModesChangedEventData(obj.FitModes);
+            notify(obj, 'SelectionChanged', e)
         end
     end
     
     methods (Access = protected)
         function setupGrid(obj)
-            obj.Grid = uigridlayout(obj, ...
+            g = uigridlayout(obj, ...
+                'RowHeight', {'1x'}, ...
+                'ColumnWidth', {'1x'}, ...
+                'Padding', zeros(1,4));
+            obj.Panel = uipanel(g, ...
+                'Title', 'Fit-Modes', ...
+                'BorderType', 'none');
+            obj.Grid = uigridlayout(obj.Panel, ...
                 'RowHeight', repmat({'fit'}, 1, 3), ...
                 'ColumnWidth', repmat({'1x'}, 1, 3), ...
                 'ColumnSpacing', 5, ...
-                'Padding', zeros(1,4));
+                'Padding', 5*ones(1,4));
         end
         function setupCheckboxes(obj)
             import mftyre.v62.FitMode
@@ -63,14 +78,18 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
         end
         function setup(obj)
             obj.Position = [0 0 500 150]; % for testing
+            obj.Settings = settings.AppSettings();
             setupGrid(obj)
             setupCheckboxes(obj)
+            obj.FitModes = obj.Settings.Fitter.FitModes;
+            addlistener(obj.Settings.Fitter, 'SettingsChanged', ...
+                @(~,~) update(obj));
         end
         function updateCheckboxes(obj)
             checkboxes = obj.Checkboxes;
             set(checkboxes, 'Value', false)
             fitmodes = enumeration('mftyre.v62.FitMode');
-            fitmodesSelected = obj.FitModes;
+            fitmodesSelected = obj.Settings.Fitter.FitModes;
             for i = 1:numel(fitmodesSelected)
                 fitmode = fitmodesSelected(i);
                 I = fitmodes == fitmode;

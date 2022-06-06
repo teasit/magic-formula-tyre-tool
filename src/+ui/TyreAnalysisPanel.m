@@ -14,6 +14,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         Plot                   matlab.ui.componentcontainer.ComponentContainer
     end
     properties (Access = protected)
+        Settings settings.AppSettings
         ButtonsGridColumnWidthWithText = [repmat({110}, 1, 2) {'1x' 110}];
         ButtonsGridColumnWidthOnlyIcon = [repmat({25}, 1, 2) {'1x' 25}];
         ButtonsTexts cell
@@ -38,8 +39,10 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     methods(Access = private)
         function onShowSidebarStateButtonValueChanged(obj, ~, event)
-            show = event.Value;
-            obj.Plot.ShowSidebar = show;
+            showSidebar = event.Value;
+            s = obj.Settings.View.TyreAnalysisPanel;
+            s.ShowSidebar = showSidebar;
+            updateSidebar(obj)
         end
         function onButtonsPlotTypeValueChanged(obj, origin, ~)
             buttons = obj.ButtonsPlotType;
@@ -165,6 +168,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     methods (Access = protected)
         function setup(obj)
             set(obj, 'Position', [0 0 800 400])
+            obj.Settings = settings.AppSettings();
             setupGrid(obj)
             setupButtons(obj)
             setupPlotCurves(obj)
@@ -172,6 +176,13 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)
         end
         function update(obj)
+            updateSidebar(obj)
+        end
+        function updateSidebar(obj)
+            s = obj.Settings.View.TyreAnalysisPanel;
+            showSidebar = s.ShowSidebar;
+            set(obj.ShowSidebarStateButton, 'Value', showSidebar)
+            obj.Plot.ShowSidebar = showSidebar;
         end
     end
 end

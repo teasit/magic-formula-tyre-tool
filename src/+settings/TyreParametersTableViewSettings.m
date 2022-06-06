@@ -1,5 +1,5 @@
-classdef TyreParametersTableViewSettings < handle
-    properties
+classdef TyreParametersTableViewSettings < settings.AbstractSettings
+    properties (SetObservable, AbortSet)
         %Only parameters that will be adjusted by Fitter are shown.
         ShowFittableParameters logical = true
         

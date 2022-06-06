@@ -7,6 +7,7 @@ classdef TyreFitterSolverSettingsPanel < matlab.ui.componentcontainer.ComponentC
     end
     
     properties (Access = private, Transient, NonCopyable)
+        Panel                       matlab.ui.container.Panel
         Grid                        matlab.ui.container.GridLayout
         AlgorithmDropdown           matlab.ui.control.DropDown
         MaxFunEvalEditField         matlab.ui.control.EditField
@@ -14,52 +15,78 @@ classdef TyreFitterSolverSettingsPanel < matlab.ui.componentcontainer.ComponentC
         ParpoolButton               matlab.ui.control.StateButton
     end
     
-    properties (Access = public)
-        Settings optim.options.Fmincon = optimoptions('fmincon')
+    properties (Dependent, Access = public)
+        OptimizerOptions optim.options.Fmincon
+    end
+    
+    properties (Access = private)
+        Settings settings.AppSettings
+    end
+    
+    methods
+        function value = get.OptimizerOptions(obj)
+            value = obj.Settings.Fitter.OptimizerSettings;
+        end
+        function set.OptimizerOptions(obj, value)
+            obj.Settings.Fitter.OptimizerSettings = value;
+        end
     end
     
     methods (Access = private)
         function onSettingsChanged(obj, ~, ~)
-            settings = obj.Settings;
+            opts = obj.OptimizerOptions;
+            s = obj.Settings.Fitter;
             try
-                settings.Algorithm = ...
+                opts.Algorithm = ...
                     obj.AlgorithmDropdown.Value;
-                settings.MaxFunctionEvaluations = str2double(...
+                opts.MaxFunctionEvaluations = str2double(...
                     obj.MaxFunEvalEditField.Value);
-                settings.MaxIterations =  str2double(...
+                opts.MaxIterations =  str2double(...
                     obj.MaxIterEditField.Value);
-                settings.UseParallel = logical(...
+                opts.UseParallel = logical(...
                     obj.ParpoolButton.Value);
             catch cause
                 exception = exceptions.InvalidSolverOptions();
                 exception = addCause(exception, cause);
                 throw(exception)
             end
-            evntdata = events.FitterSettingsChangedEventData(settings);
-            obj.Settings = settings;
-            notify(obj, 'SettingsChanged', evntdata)
+            s.OptimizerSettings.Algorithm = opts.Algorithm;
+            s.OptimizerSettings.MaxFunctionEvaluations = opts.MaxFunctionEvaluations;
+            s.OptimizerSettings.MaxIterations = opts.MaxIterations;
+            s.OptimizerSettings.UseParallel = opts.UseParallel;
+            e = events.FitterSettingsChangedEventData(opts);
+            obj.OptimizerOptions = opts;
+            notify(obj, 'SettingsChanged', e)
         end
     end
     
     methods (Access = protected)
         function setup(obj)
-            % Position only used for standalone-testing.
-            obj.Position = [0 0 1000 500];
+            obj.Position = [0 0 400 400];
             
-            obj.Grid = uigridlayout(obj, ...
+            obj.Settings = settings.AppSettings();
+            
+            g = uigridlayout(obj, ...
+                'RowHeight', {'1x'}, ...
+                'ColumnWidth', {'1x'}, ...
+                'Padding', zeros(1,4));
+            obj.Panel = uipanel(g, ...
+                'Title', 'Optimization Settings', ...
+                'BorderType', 'none');
+            obj.Grid = uigridlayout(obj.Panel, ...
                 'RowHeight', repmat({20}, 1, 4), ...
                 'ColumnWidth', repmat({'fit'}, 1, 2), ...
-                'Padding', zeros(1,4), ...
+                'Padding', 5*ones(1,4), ...
                 'ColumnSpacing', 10);
             
-            solverOptions = {
+            algorithms = {
                 'interior-point'
                 'trust-region-reflective'
                 'sqp'
                 'active-set'
                 };
             obj.AlgorithmDropdown = uidropdown(obj.Grid, ...
-                'Items', solverOptions, ...
+                'Items', algorithms, ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
             uilabel(obj.Grid, 'Text', 'Algorithm');
             
@@ -77,11 +104,11 @@ classdef TyreFitterSolverSettingsPanel < matlab.ui.componentcontainer.ComponentC
             uilabel(obj.Grid, 'Text', 'UseParallel');
         end
         function update(obj)
-            s = obj.Settings;
-            obj.AlgorithmDropdown.Value = s.Algorithm;
-            obj.MaxFunEvalEditField.Value = num2str(s.MaxFunctionEvaluations);
-            obj.MaxIterEditField.Value = num2str(s.MaxIterations);
-            obj.ParpoolButton.Value = s.UseParallel;
+            opts = obj.OptimizerOptions;
+            obj.AlgorithmDropdown.Value = opts.Algorithm;
+            obj.MaxFunEvalEditField.Value = num2str(opts.MaxFunEvals);
+            obj.MaxIterEditField.Value = num2str(opts.MaxIter);
+            obj.ParpoolButton.Value = opts.UseParallel;
         end
     end
 end

@@ -2,10 +2,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
     
     properties (Access = public)
         Model mftyre.v62.Model
-        FitModes mftyre.v62.FitMode
         FittedParameters mftyre.v62.Parameters = mftyre.v62.Parameters.empty
-        ViewSettings ui.TyreParametersTableViewSettings = ...
-            ui.TyreParametersTableViewSettings()
     end
     
     properties (Access = private, Constant)
@@ -17,6 +14,10 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
         ColumnMin = 5
         ColumnMax = 6
         ColumnDescription = 7
+    end
+    
+    properties (Access = private)
+        Settings settings.AppSettings
     end
     
     properties (Access = private, Transient, NonCopyable)
@@ -148,10 +149,10 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                     };
             end
             
-            viewSettings = obj.ViewSettings;
+            s = obj.Settings;
             I_remove = false(numParams, 1);
-            if viewSettings.ShowOnlyFitModeParameters
-                fitmodes = obj.FitModes;
+            if s.View.TyreParametersTable.ShowOnlyFitModeParameters
+                fitmodes = s.Fitter.FitModes;
                 paramNamesFitModes = {};
                 for i = 1:numel(fitmodes)
                     fitmode = fitmodes(i);
@@ -161,10 +162,10 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                 isForFitmodes = contains(paramNames, paramNamesFitModes);
                 I_remove = I_remove | ~isForFitmodes;
             end
-            if ~viewSettings.ShowFittableParameters
+            if ~s.View.TyreParametersTable.ShowFittableParameters
                 I_remove = I_remove | isFittable;
             end
-            if ~viewSettings.ShowNonFittableParameters
+            if ~s.View.TyreParametersTable.ShowNonFittableParameters
                 I_remove = I_remove | ~isFittable;
             end
             
@@ -208,6 +209,8 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
         function setup(obj)
             obj.Position = [0 0 800 400];  % for testing
             
+            obj.Settings = settings.AppSettings();
+            
             obj.Grid = uigridlayout(obj, ...
                 'RowHeight', {'1x'}, ...
                 'ColumnWidth', {'1x'}, ...
@@ -229,6 +232,10 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
             addlistener(obj, 'TyreModelChanged', @obj.onTyreModelChanged);
             addlistener(obj, 'TyreModelFitterFinished', ...
                 @obj.onTyreModelFitterFinished);
+            s = obj.Settings;
+            addlistener(s.View.TyreParametersTable, ...
+                'SettingsChanged', @(~,~) update(obj));
+            addlistener(s.Fitter, 'SettingsChanged', @(~,~) update(obj));
         end
         function update(obj)
             updateTable(obj)

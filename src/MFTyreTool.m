@@ -12,17 +12,13 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         TyreMeasurementsSelected tydex.Measurement
         TyreMeasurementsSelectionIndices logical
         TyreModelFitter mftyre.v62.Fitter
-        TyreModelFitterFitModes mftyre.v62.FitMode
         
-        %View settings, e.g. state of table filters
-        ViewSettings ui.ViewSettings
+        %App settings, e.g. state of table filters
+        Settings settings.AppSettings
     end
     properties (Constant, Access = private)
         %Stores about configuration values, e.g. application version.
         About struct = MFTyreTool.initAboutConfiguration()
-        
-        %Logfile name. Only relevant for deployed application.
-        Logfile char = 'logfile.txt'
         
         %Stores default solver (fmincon) settings e.g. max iterations.
         SolverOptionsDefault = MFTyreTool.initSolverOptions()
@@ -32,13 +28,16 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         %following user actions.
         LastUsedDirectoryByUser char
     end
-    properties (Access = ?ui.MFTyreToolChart)
+    properties (Access = private)
         UIFigure                matlab.ui.Figure
         TabGroupPrimary         matlab.ui.container.TabGroup
         TabGroupSecondary       matlab.ui.container.TabGroup
         GridMain                matlab.ui.container.GridLayout
         
         AppMenu                 matlab.ui.container.Menu
+        TyreMenu                matlab.ui.container.Menu
+        DataMenu                matlab.ui.container.Menu
+        FitterMenu              matlab.ui.container.Menu
         HelpMenu                matlab.ui.container.Menu
         ViewMenu                matlab.ui.container.Menu
         SelectFitModesMenu      matlab.ui.container.Menu
@@ -54,8 +53,6 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         TyreModelAnalysisTab    matlab.ui.container.Tab
         TyreModelAnalysisGrid   matlab.ui.container.GridLayout
         TyreAnalysisPanel       ui.TyreAnalysisPanel
-        
-        UiChart                 ui.MFTyreToolChart
     end
     methods (Static, Access = private)
         function config = initAboutConfiguration()
@@ -85,19 +82,6 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 baseException = exceptions.CouldNotExportTIR(fileName);
                 baseException = addCause(baseException, sourceException);
                 throw(baseException)
-            end
-        end
-    end
-    methods
-        function set.TyreModelFitterFitModes(app, fitmodes)
-            app.TyreModelFitterFitModes = fitmodes;
-            menus = app.SelectFitModesMenu.Children;
-            menuTexts = {menus.Text};
-            set(menus, 'Checked', 'off')
-            for i = 1:numel(fitmodes)
-                fitmodeName = char(fitmodes(i));
-                I = strcmp(menuTexts, {fitmodeName});
-                menus(I).Checked = 'on';
             end
         end
     end
@@ -204,32 +188,13 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             evtdata = events.ModelChangedEventData(model);
             notify(app.TyreAnalysisPanel, 'TyreModelChanged', evtdata)
         end
-        function onShowLogfileRequested(app, ~, ~)
-            if ~isdeployed()
-                disp(['Logfile only available in deployed application. ' ...
-                    'See console window instead.'])
-                commandwindow()
-                return
-            end
-            
-            logfile = app.Logfile;
-            if ispc()
-                winopen(logfile)
-            else
-                open(logfile)
-            end
-        end
-        function onFitterFittingModesChanged(app, ~, event)
-            modes = event.FitModes;
-            app.TyreModelFitterFitModes = modes;
-        end
         function onSelectFitModesMenuSelected(app, source, ~)
             [fitmodes, fitmodeNames] = enumeration('mftyre.v62.FitMode');
             fitmodeName = source.Text;
             I = strcmp(fitmodeNames, fitmodeName);
             fitmode = fitmodes(I);
             enable = ~logical(source.Checked);
-            fitmodesEnabled = app.TyreModelFitterFitModes;
+            fitmodesEnabled = app.Settings.Fitter.FitModes;
             if enable
                 fitmodesEnabled = [fitmodesEnabled fitmode];
                 fitmodesEnabled = sort(fitmodesEnabled);
@@ -238,11 +203,8 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 I = fitmodesEnabled == fitmode;
                 fitmodesEnabled(I) = [];
             end
-            app.TyreModelFitterFitModes = fitmodesEnabled;
+            app.Settings.Fitter.FitModes = fitmodesEnabled;
             source.Checked = matlab.lang.OnOffSwitchState(enable);
-            
-            e = events.FittingModesChangedEventData(fitmodesEnabled);
-            notify(app.TyreModelPanel, 'TyreFitterModesChanged', e)
         end
         function onLoadModelRequested(app, ~, ~)
             [fileName, path] = uigetfile('.tir', ...
@@ -384,22 +346,30 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             uialert(fig, message, title, 'Icon', 'info')
         end
         function onResetApplicationRequested(app, ~, ~)
-            message = 'All unsaved progress will be lost. Continue?';
+            message = 'Unsaved progress and App settings will be reset.';
             title = 'Reset Application';
-            options = {'Yes', 'Cancel'};
+            optionReset = 'Reset';
+            optionCancel = 'Cancel';
+            options = {optionReset, optionCancel};
             selection=  uiconfirm(app.UIFigure, message, title, ...
-                'Icon', 'warning');
-            userCancel = strcmp(selection, options{end});
-            if userCancel
-                return
+                'Icon', 'warning', 'Options', options);
+            switch selection
+                case optionCancel
+                    return
             end
             
             reset(app)
         end
-        function onFitterModelChanged(app, ~, event)
-            drawnow
-            model = event.Model;
-            app.TyreAnalysisPanel.Model = model;
+        function onFitterSettingsChanged(app, ~, ~)
+            fitmodes = app.Settings.Fitter.FitModes;
+            menus = app.SelectFitModesMenu.Children;
+            menuTexts = {menus.Text};
+            set(menus, 'Checked', 'off')
+            for i = 1:numel(fitmodes)
+                fitmodeName = char(fitmodes(i));
+                I = strcmp(menuTexts, {fitmodeName});
+                menus(I).Checked = 'on';
+            end
         end
         function onFitterMeasurementsLoaded(app, ~, event)
             arguments
@@ -431,7 +401,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             tyreModelFitted = copy(tyreModel);
             params = tyreModel.Parameters;
             measurements = app.TyreMeasurements;
-            fitmodes = app.TyreModelFitterFitModes;
+            fitmodes = app.Settings.Fitter.FitModes;
             
             if isempty(params) || isempty(measurements) || isempty(fitmodes)
                 showUserFail()
@@ -591,7 +561,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             app.setTyreModel(model)
         end
         function onViewMenuSelected(app, source, ~)
-            viewSettings = app.ViewSettings;           
+            viewSettings = app.Settings.View;           
             tag = source.Tag;
             tagParent = source.Parent.Tag;
             valueOld = logical(source.Checked);
@@ -599,8 +569,6 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             
             viewSettings.(tagParent).(tag) = valueNew;
             set(source, 'Checked', valueNew);
-            
-            app.setViewSettings(viewSettings)
         end
         function onApplyFittedTyreModelRequested(app, ~, ~)
             tyreModelFitted = app.TyreModelFitted;
@@ -687,6 +655,20 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             app.TyreMeasurementsSelected = measurements;
             app.TyreMeasurementsSelectionIndices = I;
         end
+        function onViewLayoutSettingsChanged(app, ~, ~)
+            s = app.Settings;
+            if s.View.Layout.MoveAnalysisPanelToSecondaryTabGroup
+                app.TabGroupSecondary = uitabgroup(app.GridMain);
+                app.TabGroupPrimary.Layout.Column = 1;
+                app.TyreModelAnalysisTab.Parent = app.TabGroupSecondary;
+                app.TabGroupSecondary.Layout.Row = 1;
+                app.TabGroupSecondary.Layout.Column = 2;
+            else
+                app.TyreModelAnalysisTab.Parent = app.TabGroupPrimary;
+                delete(app.TabGroupSecondary)
+                app.TabGroupPrimary.Layout.Column = [1 2];
+            end
+        end
     end
     methods (Access = private)
         function createComponents(app)
@@ -728,7 +710,12 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         end
         function createTabGroups(app)
             app.TabGroupPrimary = uitabgroup(app.GridMain);
-            app.TabGroupSecondary = uitabgroup(app.GridMain);
+            s = app.Settings; 
+            if s.View.Layout.MoveAnalysisPanelToSecondaryTabGroup
+                app.TabGroupSecondary = uitabgroup(app.GridMain);
+            else
+                app.TabGroupPrimary.Layout.Column = [1 2];
+            end
         end
         function createTyreModelTab(app)
             app.TyreModelFittingTab = uitab(app.TabGroupPrimary, ...
@@ -745,7 +732,6 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 'TyreModelApplyFittedRequested', @app.onApplyFittedTyreModelRequested, ...
                 'TyreModelStructToMatRequested', @app.onTyreModelStructToMatRequested, ...
                 'TyreModelClearRequested', @app.onClearTyreModelRequested, ...
-                'FitterFittingModesChangedFcn', @app.onFitterFittingModesChanged, ...
                 'FitterStartRequestedFcn', @app.onStartFittingRequested, ...
                 'TyreModelEditedFcn', @app.onTyreModelEdited);
         end
@@ -772,8 +758,13 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 @app.onMeasurementDataSelectionChanged);
         end
         function createTyreAnalysisTab(app)
-            app.TyreModelAnalysisTab = uitab(...
-                app.TabGroupPrimary, ...
+            s = app.Settings;
+            if s.View.Layout.MoveAnalysisPanelToSecondaryTabGroup
+                parentTabGroup = app.TabGroupSecondary;
+            else
+                parentTabGroup = app.TabGroupPrimary;
+            end
+            app.TyreModelAnalysisTab = uitab(parentTabGroup, ...
                 'Title', 'Tyre Analysis');
             app.TyreModelAnalysisGrid = uigridlayout(...
                 app.TyreModelAnalysisTab, ...
@@ -785,111 +776,155 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
         end
         function createMenus(app)
             createAppMenu(app)
+            createTyreMenu(app)
+            createDataMenu(app)
+            createFitterMenu(app)
             createViewMenu(app)
             createHelpMenu(app)
         end
         function createAppMenu(app)
             app.AppMenu = uimenu(app.UIFigure, 'Text', 'App');
-            %TODO: remove disabled state when fully implemented
             uimenu(app.AppMenu, ...
-                'Text', '&New Tyre Model', ...
-                'Accelerator', 'N', ...
-                'MenuSelectedFcn', @app.onNewTyreModelRequested);
-            uimenu(app.AppMenu, ...
-                'Text', '&Open Tyre Model', ...
-                'Accelerator', 'O', ...
-                'MenuSelectedFcn', @app.onLoadModelRequested);
-            uimenu(app.AppMenu, ...
-                'Text', '&Save Tyre Model', ...
-                'Accelerator', 'S', ...
-                'MenuSelectedFcn', @app.onSaveTyreModelRequested);
-            uimenu(app.AppMenu, ...
-                'Text', '&Clear Tyre Model', ...
-                'MenuSelectedFcn', @app.onClearModelRequested);
-            
-            uimenu(app.AppMenu, ...
-                'Text', '&Import Tyre Data', ...
-                'Accelerator', 'I', ...
-                'MenuSelectedFcn', @app.onImportMeasurementsRequested, ...
-                'Separator', 'on');
-            uimenu(app.AppMenu, ...
-                'Text', 'Clear Tyre Data', ...
-                'MenuSelectedFcn', @app.onClearMeasurementsRequested);
-            
-            app.SelectFitModesMenu = uimenu(app.AppMenu, ...
-                'Text', 'Select Fit-Modes', ...
-                'Separator', 'on');
-            fitmodes = {
-                char(mftyre.v62.FitMode.Fx0)
-                char(mftyre.v62.FitMode.Fy0)
-                char(mftyre.v62.FitMode.Fx)
-                char(mftyre.v62.FitMode.Fy)
-                };
-            for i = 1:numel(fitmodes)
-                fitmode = fitmodes{i};
-                uimenu(app.SelectFitModesMenu, 'Text', fitmode, ...
-                    'MenuSelectedFcn', @app.onSelectFitModesMenuSelected);
-            end
-            uimenu(app.AppMenu, ...
-                'Text', 'Start &Fitter', ...
-                'Accelerator', 'F', ...
-                'MenuSelectedFcn', @app.onStartFittingRequested);
-            
+                'Text', 'Check for Updates', ...
+                'MenuSelectedFcn', @app.onCheckUpdates)
             uimenu(app.AppMenu, ...
                 'Text', '&Reset Application', ...
                 'Accelerator', 'R', ...
                 'Separator', 'on', ...
                 'MenuSelectedFcn', @app.onResetApplicationRequested)
-            uimenu(app.AppMenu, ...
-                'Text', 'Show &Logfile', ...
-                'Accelerator', 'L', ...
-                'MenuSelectedFcn', @app.onShowLogfileRequested);
+        end
+        function createDataMenu(app)
+            app.DataMenu = uimenu(app.UIFigure, 'Text', 'Data');
+            uimenu(app.DataMenu, ...
+                'Text', '&Import Tyre Data', ...
+                'Accelerator', 'I', ...
+                'MenuSelectedFcn', @app.onImportMeasurementsRequested);
+            uimenu(app.DataMenu, ...
+                'Text', 'Clear Tyre Data', ...
+                'MenuSelectedFcn', @app.onClearMeasurementsRequested);
+        end
+        function createTyreMenu(app)
+            app.TyreMenu = uimenu(app.UIFigure, 'Text', 'Tyre');
+            uimenu(app.TyreMenu, ...
+                'Text', '&New Tyre Model', ...
+                'Accelerator', 'N', ...
+                'MenuSelectedFcn', @app.onNewTyreModelRequested);
+            uimenu(app.TyreMenu, ...
+                'Text', '&Open Tyre Model', ...
+                'Accelerator', 'O', ...
+                'MenuSelectedFcn', @app.onLoadModelRequested);
+            uimenu(app.TyreMenu, ...
+                'Text', '&Save Tyre Model', ...
+                'Accelerator', 'S', ...
+                'MenuSelectedFcn', @app.onSaveTyreModelRequested);
+            uimenu(app.TyreMenu, ...
+                'Text', '&Clear Tyre Model', ...
+                'MenuSelectedFcn', @app.onClearModelRequested);
+        end
+        function createFitterMenu(app)
+            app.FitterMenu = uimenu(app.UIFigure, 'Text', 'Fitter');
+            app.SelectFitModesMenu = uimenu(app.FitterMenu, ...
+                'Text', 'Select Fit-Modes', ...
+                'Separator', 'on');
+            fitmodesText = {
+                char(mftyre.v62.FitMode.Fx0)
+                char(mftyre.v62.FitMode.Fy0)
+                char(mftyre.v62.FitMode.Fx)
+                char(mftyre.v62.FitMode.Fy)
+                };
+            fitmodesSelected = app.Settings.Fitter.FitModes;
+            for i = 1:numel(fitmodesText)
+                text = fitmodesText{i};
+                checked = any(strcmp(text, char(fitmodesSelected)));
+                uimenu(app.SelectFitModesMenu, 'Text', text, ...
+                    'Checked', checked, ...
+                    'MenuSelectedFcn', @app.onSelectFitModesMenuSelected);
+            end
+            
+            uimenu(app.FitterMenu, ...
+                'Text', 'Start &Fitter', ...
+                'Accelerator', 'F', ...
+                'MenuSelectedFcn', @app.onStartFittingRequested);
         end
         function createViewMenu(app)
             app.ViewMenu = uimenu(app.UIFigure, 'Text', 'View');
+            s = app.Settings.View;
             
             m = uimenu(app.ViewMenu, ...
                 'Text', 'Tyre Model Parameter Table', ...
-                'Tag', 'TyreParametersTableViewSettings');
+                'Tag', 'TyreParametersTable');
             uimenu(m, ...
                 'Text', 'Show Fittable Parameters', ...
                 'Tag', 'ShowFittableParameters', ...
-                'Checked', true, ...
+                'Checked', s.TyreParametersTable.ShowFittableParameters, ...
                 'MenuSelectedFcn', @app.onViewMenuSelected);
             uimenu(m, ...
                 'Text', 'Show Non-Fittable Parameters', ...
                 'Tag', 'ShowNonFittableParameters', ...
-                'Checked', true, ...
+                'Checked', s.TyreParametersTable.ShowNonFittableParameters, ...
                 'MenuSelectedFcn', @app.onViewMenuSelected);
             uimenu(m, ...
                 'Text', 'Show Only Fit-Mode Parameters', ...
                 'Tag', 'ShowOnlyFitModeParameters', ...
-                'Checked', false, ...
+                'Checked', s.TyreParametersTable.ShowOnlyFitModeParameters, ...
                 'MenuSelectedFcn', @app.onViewMenuSelected);
             
             m = uimenu(app.ViewMenu, ...
                 'Text', 'Layout', ...
-                'Tag', 'ViewLayoutSettings');
+                'Tag', 'Layout');
             uimenu(m, ...
                 'Text', 'Analysis Tab on Secondary TabGroup', ...
                 'Tag', 'MoveAnalysisPanelToSecondaryTabGroup', ...
-                'Checked', false, ...
+                'Checked', s.Layout.MoveAnalysisPanelToSecondaryTabGroup, ...
                 'MenuSelectedFcn', @app.onViewMenuSelected);
 
         end
         function createHelpMenu(app)
             app.HelpMenu = uimenu(app.UIFigure, 'Text', 'Help');
             uimenu(app.HelpMenu, ...
-                'Text', 'Check for Updates', ...
-                'MenuSelectedFcn', @app.onCheckUpdates)
-            uimenu(app.HelpMenu, ...
                 'Text', 'About', ...
                 'MenuSelectedFcn', @app.onAboutDialogRequested)
         end
     end
     methods (Access = private)
+        function initSettings(app)
+            app.Settings = settings.AppSettings();
+        end
+        function addlisteners(app)
+            addlistener(app.Settings.View.Layout, 'SettingsChanged', ...
+                @app.onViewLayoutSettingsChanged);
+            addlistener(app.Settings.Fitter, 'SettingsChanged', ...
+                @app.onFitterSettingsChanged);
+        end
         function startupFcn(app)
-            model = mftyre.v62.Model.empty();
+            appSettings = app.Settings;
+            lastTyreFile = appSettings.LastSession.TyreModelFile;
+            if ~isempty(lastTyreFile)
+                fig = app.UIFigure;
+                title = 'Load Last Tyre Model';
+                message = sprintf(['Do you want to load the following ' ...
+                    'TIR file from last session?\n\n%s'], lastTyreFile);
+                optionLoad = 'Yes';
+                optionCancel = 'Cancel';
+                options = {optionLoad, optionCancel};
+                selection = uiconfirm(fig, message, title, ...
+                    'icon', 'info', ...
+                    'Options', options);
+                switch selection
+                    case optionLoad
+                        try
+                            model = mftyre.v62.Model(lastTyreFile);
+                        catch
+                            model = mftyre.v62.Model.empty;
+                            message = 'Failed to load last tyre model!';
+                            uialert(fig, message, title, 'Icon', 'error')
+                        end
+                    case optionCancel
+                        model = mftyre.v62.Model.empty;
+                end
+            else
+                model = mftyre.v62.Model.empty;
+            end
             app.setTyreModel(model)
             
             fitter = mftyre.v62.Fitter();
@@ -899,11 +934,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             measurements = tydex.Measurement.empty();
             app.setTyreMeasurementData(measurements);
             
-            viewSettings = ui.ViewSettings();
-            setViewSettings(app, viewSettings)
-            
-            app.UiChart = ui.MFTyreToolChart('app', app, ...
-                'viewSettings', viewSettings);
+            addlisteners(app)
         end
         function setTyreModel(app, model, overwriteBackup)
             arguments
@@ -919,9 +950,14 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             if overwriteBackup
                 app.TyreModelBackup = model;
             end
-            evtdata = events.ModelChangedEventData(modelCopy);
-            notify(app.TyreModelPanel, 'TyreModelChanged', evtdata)
-            notify(app.TyreAnalysisPanel, 'TyreModelChanged', evtdata)
+            if isempty(model) 
+                app.Settings.LastSession.TyreModelFile = char.empty;
+            else
+                app.Settings.LastSession.TyreModelFile = model.File;
+            end
+            e = events.ModelChangedEventData(modelCopy);
+            notify(app.TyreModelPanel, 'TyreModelChanged', e)
+            notify(app.TyreAnalysisPanel, 'TyreModelChanged', e)
             app.TyreModelPanel.Model = modelCopy;
         end
         function setTyreMeasurementData(app, measurements)
@@ -937,23 +973,17 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             notify(app.TyreMeasurementsPanel, 'MeasurementDataChanged', e);
             notify(app.TyreAnalysisPanel, 'TyreDataChanged', e);
         end
-        function setViewSettings(app, viewSettings)
-            app.ViewSettings = viewSettings;
-            app.UiChart.ViewSettingsChanged();
-            event = events.ViewSettingsChanged(viewSettings);
-            notify(app.TyreModelPanel, 'ViewSettingsChanged', event)
-        end
     end
     methods (Access = public)
         function reset(app)
             %RESET Resets application without closing current window.
+            app.Settings.reset()
+            
             fig = app.UIFigure;
             dlg = uiprogressdlg(fig, 'Title', 'Reset Application', ...
                 'Message', 'Please wait.', 'Indeterminate', 'on');
             
-            children = fig.Children;
-            delete(children)
-            delete(app.UiChart)
+            delete(fig.Children)
             
             metaClass = ?MFTyreTool;
             metaProperties = metaClass.PropertyList;
@@ -978,6 +1008,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             runningApp = getRunningApp(app);
             
             if isempty(runningApp)
+                initSettings(app)
                 createComponents(app)
                 registerApp(app, app.UIFigure)
                 runStartupFcn(app, @startupFcn)
@@ -991,11 +1022,18 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             end
         end
         function delete(app)
+            if ~isempty(app.Settings)
+                try
+                    app.Settings.save()
+                    clear AppSettings
+                catch
+                    warning('Failed to save settings to persistent storage.')
+                end
+            end
             delete(app.TyreModel)
             delete(app.TyreModelBackup)
             delete(app.TyreModelFitter)
             delete(app.UIFigure)
-            delete(app.UiChart)
         end
     end
 end
