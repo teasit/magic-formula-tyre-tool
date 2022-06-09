@@ -695,6 +695,7 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             end
             createGrid(app)
             createTabGroups(app)
+            createStatusBar(app)
             createTyreModelTab(app)
             createTyreMeasurementsTab(app)
             createTyreAnalysisTab(app)
@@ -722,13 +723,20 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
             app.GridMain = uigridlayout(app.UIFigure, ...
                 'Padding', zeros(1,4), ...
                 'RowSpacing', 0, ...
-                'RowHeight', {'1x'}, ...
+                'RowHeight', {'1x',22}, ...
                 'ColumnWidth', {'1x','1x'}, ...
                 'ColumnSpacing', 0);
         end
         function createTabGroups(app)
             app.TabGroupPrimary = uitabgroup(app.GridMain);
             app.TabGroupSecondary = uitabgroup(app.GridMain);
+        end
+        function createStatusBar(app)
+            sb = ui.StatusBar(app.GridMain);
+            sb.StatusText = 'WARNING: ''FZW'' higher than ''FZMAX''';
+            sb.StatusType = enum.StatusType.Warning;
+            sb.Layout.Row = 2;
+            sb.Layout.Column = [1 numel(app.GridMain.ColumnWidth)];
         end
         function createTyreModelTab(app)
             app.TyreModelFittingTab = uitab(app.TabGroupPrimary, ...
