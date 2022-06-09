@@ -174,16 +174,30 @@ classdef (Sealed) MFTyreTool < matlab.apps.AppBase
                 return
             end
                 
-            if available
-                icon = 'info';
-                message = 'Update from %s to %s available.';
-                message = sprintf(message, versionCurrent, versionLatest);
-            else
-                icon = 'success';
+            if ~available
                 message = 'The latest version is already installed (%s).';
                 message = sprintf(message, versionCurrent);
+                uialert(fig, message, title, 'icon', 'success')
+                return
             end
-            uialert(fig, message, title, 'icon', icon)
+            
+            optionDownload = 'Download';
+            optionCancel = 'Cancel';
+            options = {optionDownload, optionCancel};
+            message = 'Update from %s to %s available.';
+            message = sprintf(message, versionCurrent, versionLatest);
+            message = [message newline() newline() ...
+                'Note that for the latest GitHub release to show up on ' ...
+                'FileExchange, expect a delay of up to an hour.'];
+            selection = uiconfirm(fig, message, title, 'icon', 'info', ...
+                'Options', options, 'DefaultOption', optionDownload);
+            switch selection
+                case optionDownload
+                    url = [app.About.Source '/releases/latest'];
+                    web(url)
+                case optionCancel
+                    return
+            end
         end
         function onTyreModelEdited(app, ~, ~)
             model = app.TyreModel;
