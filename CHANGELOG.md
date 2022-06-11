@@ -1,3 +1,4 @@
 # Changelog
 
-- new: When update is available, user will have option to be redirected to latest GitHub release page
+- new: most app settings are now stored persistently across sessions
+- new: menu bar overhaul (split "App" menu into multiple menus), should help keep menu complexity moderate with upcoming features
