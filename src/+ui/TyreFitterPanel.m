@@ -1,5 +1,5 @@
 classdef TyreFitterPanel < matlab.ui.componentcontainer.ComponentContainer
-    %TyreFitterPanel Provides GUI to configure and run MFTyre Fitter.
+    %TyreFitterPanel Provides GUI to configure and run Fitter.
     
     events (HasCallbackProperty, NotifyAccess = protected)
         FitterStartRequested

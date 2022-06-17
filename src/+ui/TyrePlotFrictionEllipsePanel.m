@@ -2,14 +2,17 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
     %TYREPLOTFRICTIONELLIPSEPANEL Plots friction ellipse of tyre model.
     
     properties
-        Model mftyre.v62.Model = mftyre.v62.Model.empty
-        ShowSidebar logical = true
+        Model magicformula.v62.Model = magicformula.v62.Model.empty
     end
     properties (Access = private, Transient, NonCopyable)
         MainGrid                    matlab.ui.container.GridLayout
         Axes                        ui.FrictionEllipseAxes
         SidePanel                   matlab.ui.container.Panel
         SidePanelGrid               matlab.ui.container.GridLayout
+    end
+    properties (Access = private)
+        Settings settings.AppSettings
+        SettingsChangedListener event.listener
     end
     events (NotifyAccess = public)
         TyreModelChanged
@@ -84,7 +87,7 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
     end
     methods(Access = protected)
         function updateSidebarState(obj)
-            show = obj.ShowSidebar;
+            show = obj.Settings.View.TyreAnalysisPanel.ShowSidebar;
             sidebar = obj.SidePanel;
             axes = obj.Axes;
             if show
@@ -126,14 +129,6 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
                 'ColumnSpacing', 10, ...
                 'Padding', 10*ones(1,4), ...
                 'Scrollable', false);
-            
-%             uilabel(g, 'Text', 'Legend');
-%             uibutton(g, 'state', 'Text', 'On', 'Enable', 'off', ...
-%                 'ValueChangedFcn', @obj.onPlotSettingsChanged, ...
-%                 'Tag', 'Legend');
-%             
-%             uilabel(g, 'Text', 'Hold');
-%             uibutton(g, 'state', 'Text', 'On', 'Enable', 'off');
             
             uilabel(g, 'Text', 'Axis');
             uibutton(g, 'state', 'Text', 'Equal', 'Value', true, ...
@@ -254,11 +249,15 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
         end
         function setupListeners(obj)
             addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
+            s = obj.Settings.View.TyreAnalysisPanel;
+            obj.SettingsChangedListener = listener(...
+                s, 'SettingsChanged', @(~,~) obj.update());
         end
     end
     methods (Access = protected)
         function setup(obj)
             set(obj, 'Position', [0 0 800 400])
+            obj.Settings = settings.AppSettings();
             setupMainGrid(obj)
             setupAxes(obj)
             setupSidePanel(obj)

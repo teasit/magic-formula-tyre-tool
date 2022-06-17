@@ -1,32 +1,29 @@
-# MF-Tyre MATLAB Tool
+# Magic Formula Tyre Tool
 
-[![View MFTyreTool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/mftyre-matlab-tool)](https://github.com/teasit/mftyre-matlab-tool/releases/latest)
+[![View Tool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/magic-formula-tyre-tool)](https://github.com/teasit/magic-formula-tyre-tool/releases/latest)
 
-![Screenshot Analysis Tab with Plots](/assets/img/MFTyreTool_Screenshot_Main.jpg)
+![Screenshot Analysis Tab with Plots](/assets/img/App_Screenshot_Main.jpg)
 
-- Interactively fit MF-Tyre models to data
+- Interactively fit Magic Formula tyre models to data
 - Automatically separate timeseries data into steady-state conditions
 - Compare model outputs visually against data
 - Load/Save models from/to `.tir` (Tyre Property File)
 - Export fitted models parameters as `struct`
 
 This project uses the model functions provided by the
-[MF-Tyre MATLAB Library](https://github.com/teasit/mftyre-matlab-library).
+[Magic Formula Tyre Library](https://github.com/teasit/magic-formula-tyre-library).
 You can export the model parameters to use with said library to simulate tyre behavior in
 MATLAB or create models suitable for code-generation in Simulink.
 
 ## Motivation
 
 This project originates in my work as a Formula Student member of
-[UPBracing](https://formulastudent.uni-paderborn.de/).
-The software is designed as an open-source variant to
-[Simcenter MF-Tool](https://www.plm.automation.siemens.com/global/en/products/simulation-test/tire-simulation-testing.html)
-with accompanying
-[open-source equations](https://github.com/teasit/mftyre-matlab-library)
-for model evaluation suitable for code-generation.
-Especially students in Formula Student / Formula SAE might benefit from an easy-to-use
-graphical approach to empirical tyre modeling.
+[UPBracing](https://formulastudent.uni-paderborn.de/), where we required
+computationally efficient but precise tire models suitable for code-generation.
+Especially students in Formula Student / Formula SAE who want to model their tires for
+control and estimation algorithms or simply for the purpose of better understanding might
+benefit from this tool.
 
 This project would not have been possible without the data provided by the
 [Formula SAE Tire Test Consortium (FSAE TTC)](https://www.millikenresearch.com/fsaettc.html)
@@ -48,17 +45,11 @@ de-identified and obscured data for demonstration purposes.
 
 There are several ways:
 
-- Download latest Release from [MATLAB File Exchange](https://de.mathworks.com/matlabcentral/fileexchange/111375-mftyretool)
-- Download latest Release from [GitHub](https://github.com/teasit/mftyre-matlab-tool/releases)
+- Download latest Release from [MATLAB File Exchange](https://de.mathworks.com/matlabcentral/fileexchange/111375)
+- Download latest Release from [GitHub](https://github.com/teasit/magic-formula-tyre-tool/releases)
 - Clone using Git and integrate into your projects using a [Project Reference](https://de.mathworks.com/help/simulink/ug/add-or-remove-a-reference-to-another-project.html)
 
 ## Usage
-
-The usage is similar to the one of
-[Simcenter MF-Tool](https://www.plm.automation.siemens.com/global/en/products/simulation-test/tire-simulation-testing.html).
-In fact, this tool can integrate into the Simcenter MF-Tool workflow by exporting measurements
-as TYDEX[^TYDEX-KIT][^Paper-TNO] files (`*.tdx`).
-That way, the fitting algorithm of Simcenter MF-Tool can be used instead.
 
 The core workflows are summarized in this flowchart:
 
@@ -79,7 +70,7 @@ flowchart TD
   InputData --> |.mat / .csv / ...| ParseData;
   subgraph tool[ ]
     DecideNewOrLoad{Base Model\navailable?}
-    NewMdl[Create New\nMF-Tyre model];
+    NewMdl[Create New\nTyre model];
     LoadMdl[Load from\n.tir file];
     ParseData --> DecideNewOrLoad;
     DecideNewOrLoad --> |no| NewMdl;
@@ -107,18 +98,18 @@ measurement object contains data for only one steady-state condition. This means
 one variable is *sweeped* (= *transient*). In case of Formula SAE Tire Test Consortium Data,
 two parsers for *Cornering* and *Drive/Brake* MAT files in SI-units are already available.
 
-![Animation Data Import](assets/img/MFTyreTool_Screenshot_DataImport.gif)
+![Animation Data Import](assets/img/App_Screenshot_DataImport.gif)
 
 ### Fit Model to Data
 
-You can interactively fit your MF-Tyre model to measured test-bench data.
+You can interactively fit your Magic Formula tire model to measured test-bench data.
 Interactively means, you can cancel the fitting process at any point. The last iteration
 will be saved and you can compare the fitted values to the current model values in a
 table. You can then choose to append these values to your model.
 
-![Animation Fitting](assets/img/MFTyreTool_Animation_Fitting.gif)
+![Animation Fitting](assets/img/App_Animation_Fitting.gif)
 
-![Animation Fitting](assets/img/MFTyreTool_Animation_AppendFitted.gif)
+![Animation Fitting](assets/img/App_Animation_AppendFitted.gif)
 
 ### Manual Model Editing
 
@@ -126,20 +117,20 @@ You can manually edit the model values in the table. When using the Auto-Refresh
 the plot updates automatically to reflect your changes. This helps to get an intuition on
 the effects of different parameter values.
 
-![Animation Manual Editing](assets/img/MFTyreTool_Animation_ManualEditing.gif)
+![Animation Manual Editing](assets/img/App_Animation_ManualEditing.gif)
 
 ### Plot Model against Data
 
 To make sure the fitting process yields a plausible result, you can compare the test-bench
 data to your fitted model. If the import process of the measurements worked correctly,
 you will be able to select steady-state values from the dropdowns and thereby filter the
-data. The MF-Tyre model will then be supplied with the measured inputs for an exact
+data. The Magic Formula tire model will then be supplied with the measured inputs for an exact
 comparison.
 
-![Animation Plotting](assets/img/MFTyreTool_Animation_Plotting.gif)
+![Animation Plotting](assets/img/App_Animation_Plotting.gif)
 
 ## Known Issues
 
 - Currently only Fitting of Fx0, Fy0, Fx, Fy is supported
-- Only MF-Tyre 6.1.2 (62) is supported.
+- Only Magic Formula version 6.1.2 (62) is supported.
 - The FSAE TTC parsers might not always work. You might have to create your own parser.

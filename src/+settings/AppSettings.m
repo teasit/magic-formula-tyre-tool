@@ -60,7 +60,7 @@ classdef AppSettings < settings.AbstractSettings
         end
         function obj = AppSettings()
             persistent pobj
-            if isempty(pobj)
+            if isempty(pobj) || ~isvalid(pobj)
                 init(obj)
                 pobj = obj;
             else

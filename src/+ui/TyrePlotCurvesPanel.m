@@ -2,7 +2,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
     %TYREPLOTCURVESPANEL Plot X-Var sweeps with corresponding Y-Var.
     
     properties
-        Model mftyre.v62.Model = mftyre.v62.Model.empty
+        Model magicformula.v62.Model = magicformula.v62.Model.empty
         Measurements tydex.Measurement = tydex.Measurement.empty
         SteadyStateValues cell = {{0} {0} {0} {0.8E5} {1.5E3}}
         SteadyStateValuesSelected cell = [{0} {0} {0} {0.8E5} {1.5E3}]
@@ -19,7 +19,6 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
         XAxisRangeFZW      (1,2) = [500 1500]
         
         AutoRefresh logical = false
-        ShowSidebar logical = true
     end
     properties (Access = private)
         SteadyStateNamesAll = {
@@ -36,6 +35,8 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             'N'
             };
         LegendLabels = {};
+        Settings settings.AppSettings
+        ViewSettingsChangedListener event.listener
     end
     properties (Access = private, Transient, NonCopyable)
         MainGrid                    matlab.ui.container.GridLayout
@@ -278,7 +279,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     methods(Access = protected)
         function updateSidebarState(obj)
-            show = obj.ShowSidebar;
+            show = obj.Settings.View.TyreAnalysisPanel.ShowSidebar;
             sidebar = obj.SidePanel;
             axes = obj.Axes;
             if show
@@ -364,7 +365,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                 
                 params = obj.Model.Parameters;
                 p = struct(params);
-                [FX, FYW] = mftyre.v62.eval(p, SLIPANGL, LONGSLIP, ...
+                [FX, FYW] = magicformula.v62.eval(p, SLIPANGL, LONGSLIP, ...
                     INCLANGL, INFLPRES, FZW, p.TYRESIDE);
                 
                 switch yVar
@@ -695,11 +696,15 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
         function setupListeners(obj)
             addlistener(obj, 'TyreModelChanged', @obj.onModelChanged);
             addlistener(obj, 'TyreDataChanged', @obj.onDataChanged);
+            obj.ViewSettingsChangedListener = listener(...
+                obj.Settings.View.TyreAnalysisPanel, 'SettingsChanged', ...
+                @(~,~) obj.update());
         end
     end
     methods (Access = protected)
         function setup(obj)
             set(obj, 'Position', [0 0 800 400])
+            obj.Settings = settings.AppSettings();
             setupMainGrid(obj)
             setupAxes(obj)
             setupSidePanel(obj)

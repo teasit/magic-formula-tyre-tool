@@ -1,6 +1,6 @@
 classdef (ConstructOnLoad) TyreModelFitterFinished < event.EventData
    properties
-      ParametersFitted mftyre.v62.Parameters
+      ParametersFitted magicformula.v62.Parameters
    end
    methods
       function eventData = TyreModelFitterFinished(params)

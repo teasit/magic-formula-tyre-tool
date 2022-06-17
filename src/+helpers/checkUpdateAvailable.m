@@ -8,7 +8,7 @@ versionValidPattern = ...
 versionCurrent = erase(versionCurrent, 'v');
 assert(matches(versionCurrent, versionValidPattern)); 
 
-url = 'https://api.github.com/repos/teasit/mftyre-matlab-tool/releases/latest';
+url = 'https://api.github.com/repos/teasit/magic-formula-tyre-tool/releases/latest';
 versionLatest = webread(url).tag_name;
 versionLatest = erase(versionLatest, 'v');
 assert(matches(versionLatest, versionValidPattern));

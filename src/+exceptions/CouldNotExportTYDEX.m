@@ -1,7 +1,7 @@
 classdef CouldNotExportTYDEX < MException 
     methods
         function obj = CouldNotExportTYDEX()
-            errId = 'MFTyreTool:CouldNotExportTYDEX';
+            errId = 'MagicFormulaTyreTool:CouldNotExportTYDEX';
             msgtext = 'Could not export measurements to selected folder.';
             obj@MException(errId, msgtext)
         end

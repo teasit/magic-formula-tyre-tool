@@ -1,4 +1,5 @@
 # Changelog
 
-- new: most app settings are now stored persistently across sessions
-- new: menu bar overhaul (split "App" menu into multiple menus), should help keep menu complexity moderate with upcoming features
+- new: app and code renaming due to conflicts with existing trademark
+- documentation and screenshots updated
+- fix: event-listener lifecycling issues fixed

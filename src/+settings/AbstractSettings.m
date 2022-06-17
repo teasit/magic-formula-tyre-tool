@@ -5,7 +5,7 @@ classdef (Abstract) AbstractSettings < handle
     %recursion must continue.
     properties (Constant, Access = protected)
         %Name of top-level Settings Group: settings().<SettingsGroup>
-        SettingsGroupTopLevel = 'mftyretool'
+        SettingsGroupTopLevel = 'MagicFormulaTyreTool'
     end
     events (NotifyAccess = protected)
         %Triggered by any property change in the handle-hierarchy.

@@ -1,8 +1,8 @@
 classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
     
     properties (Access = public)
-        Model mftyre.v62.Model
-        FittedParameters mftyre.v62.Parameters = mftyre.v62.Parameters.empty
+        Model magicformula.v62.Model
+        FittedParameters magicformula.v62.Parameters = magicformula.v62.Parameters.empty
     end
     
     properties (Access = private, Constant)
@@ -18,6 +18,8 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
     
     properties (Access = private)
         Settings settings.AppSettings
+        TableViewSettingsChangedListener event.listener
+        FitterSettingsChangedListener event.listener
     end
     
     properties (Access = private, Transient, NonCopyable)
@@ -106,7 +108,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
             params = model.Parameters;
             paramNames = fieldnames(params);
             numParams = numel(paramNames);
-            type = 'mftyre.v62.ParameterFittable';
+            type = 'magicformula.v62.ParameterFittable';
             isFittable = false(numParams, 1); 
             for i = 1:numParams
                 paramName = paramNames{i};
@@ -157,7 +159,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                 for i = 1:numel(fitmodes)
                     fitmode = fitmodes(i);
                     paramNamesFitModes = [paramNamesFitModes
-                        mftyre.v62.getFitParamNames(fitmode)];
+                        magicformula.v62.getFitParamNames(fitmode)];
                 end
                 isForFitmodes = contains(paramNames, paramNamesFitModes);
                 I_remove = I_remove | ~isForFitmodes;
@@ -195,7 +197,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
             for i = 1:numel(paramNames)
                 name = paramNames{i};
                 param = params.(name);
-                if ~isa(param, 'mftyre.v62.ParameterFittable')
+                if ~isa(param, 'magicformula.v62.ParameterFittable')
                     continue
                 end
                 row = find(strcmp(paramNamesTbl, name));
@@ -233,9 +235,11 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
             addlistener(obj, 'TyreModelFitterFinished', ...
                 @obj.onTyreModelFitterFinished);
             s = obj.Settings;
-            addlistener(s.View.TyreParametersTable, ...
+            obj.TableViewSettingsChangedListener = listener(...
+                s.View.TyreParametersTable, ...
                 'SettingsChanged', @(~,~) update(obj));
-            addlistener(s.Fitter, 'SettingsChanged', @(~,~) update(obj));
+            obj.FitterSettingsChangedListener = listener(...
+                s.Fitter, 'SettingsChanged', @(~,~) update(obj));
         end
         function update(obj)
             updateTable(obj)

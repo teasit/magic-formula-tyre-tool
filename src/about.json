@@ -1,9 +1,10 @@
 {
-    "Name": "MFTyreTool",
-    "Version": "1.3.0",
+    "Name": "MagicFormulaTyreTool",
+    "Version": "1.3.1",
     "Authors": [
         "Tom Teasdale"
     ],
-    "Source": "github.com/teasit/mftyre-matlab-tool",
+    "Source": "https://github.com/teasit/magic-formula-tyre-tool",
+    "FileExchange": "https://mathworks.com/matlabcentral/fileexchange/111375",
     "Contact": "teasdale@lightsaber.red"
 }

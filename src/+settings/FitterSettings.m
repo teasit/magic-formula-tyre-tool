@@ -1,7 +1,7 @@
 classdef FitterSettings < settings.AbstractSettings
-    %FITTERSETTINGS Contains app settings for MF-Tyre fitter
+    %FITTERSETTINGS Contains app settings for fitter
     properties (SetObservable, AbortSet)
-        FitModes mftyre.v62.FitMode = mftyre.v62.FitMode.empty
+        FitModes magicformula.v62.FitMode = magicformula.v62.FitMode.empty
         OptimizerSettings optim.options.Fmincon = optimoptions('fmincon');
     end
     methods

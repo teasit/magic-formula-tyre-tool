@@ -2,7 +2,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
     %FRICTIONELLIPSEAXES Axes to plot friction ellipse for tyre model.
     
     properties
-        Model mftyre.Model = mftyre.v62.Model.empty
+        Model magicformula.Model = magicformula.v62.Model.empty
     end
     properties
         SLIPANGL_Max double = 15
@@ -51,6 +51,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             hold(ax, 'on')
             xlabel(ax, 'FY / N')
             ylabel(ax, 'FX / N')
+            datacursormode on
             obj.Axes = ax;
         end
         function update(obj)

@@ -3,7 +3,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     
     properties
         Measurements tydex.Measurement = tydex.Measurement.empty
-        Model mftyre.Model = mftyre.v62.Model.empty
+        Model magicformula.Model = magicformula.v62.Model.empty
     end
     properties (Access = private, Transient, NonCopyable)
         Grid                        matlab.ui.container.GridLayout
@@ -42,7 +42,6 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             showSidebar = event.Value;
             s = obj.Settings.View.TyreAnalysisPanel;
             s.ShowSidebar = showSidebar;
-            updateSidebar(obj)
         end
         function onButtonsPlotTypeValueChanged(obj, origin, ~)
             buttons = obj.ButtonsPlotType;
@@ -176,13 +175,11 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)
         end
         function update(obj)
-            updateSidebar(obj)
+            updateShowSideBarButton(obj)
         end
-        function updateSidebar(obj)
-            s = obj.Settings.View.TyreAnalysisPanel;
-            showSidebar = s.ShowSidebar;
+        function updateShowSideBarButton(obj)
+            showSidebar = obj.Settings.View.TyreAnalysisPanel.ShowSidebar;
             set(obj.ShowSidebarStateButton, 'Value', showSidebar)
-            obj.Plot.ShowSidebar = showSidebar;
         end
     end
 end

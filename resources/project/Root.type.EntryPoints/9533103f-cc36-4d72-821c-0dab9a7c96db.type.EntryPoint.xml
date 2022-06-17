@@ -1,2 +1,2 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Info Type="Basic" Visible="1" Icon="" File="tools/publishReleaseMFTyreTool.m" Name="publishReleaseMFTyreTool" />
+<Info Type="Basic" Visible="1" Icon="" File="tools/publishRelease.m" Name="Publish Release" />

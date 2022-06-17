@@ -4,7 +4,7 @@ classdef CouldNotImportTIR < MException
             arguments
                 file char
             end
-            errId = 'MFTyreTool:CouldNotImportTIR';
+            errId = 'MagicFormulaTyreTool:CouldNotImportTIR';
             msgtext = sprintf('Could not import TIR file "%s".', file);
             obj@MException(errId, msgtext)
         end

@@ -4,7 +4,7 @@ classdef CouldNotExportTIR < MException
             arguments
                 file char
             end
-            errId = 'MFTyreTool:CouldNotExportTIR';
+            errId = 'MagicFormulaTyreTool:CouldNotExportTIR';
             msgtext = sprintf('Could not export model to "%s".', file);
             obj@MException(errId, msgtext)
         end

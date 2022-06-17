@@ -12,7 +12,7 @@ arguments
     optimValues
     state
     dlg matlab.ui.dialog.ProgressDialog
-    fitter mftyre.v62.Fitter
+    fitter magicformula.v62.Fitter
 end
 persistent fval0
 if isempty(fval0)

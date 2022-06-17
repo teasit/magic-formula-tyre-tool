@@ -1,12 +1,13 @@
 classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentContainer
-    %FitterFITTINGMODESPANEL Panel to configure fitting modes for MFTyre fitter.
+    %FitterFITTINGMODESPANEL Panel to configure fitting modes for fitter.
     
     properties (SetAccess = protected)
-        FitModes mftyre.v62.FitMode
+        FitModes magicformula.v62.FitMode
     end
     
     properties (Access = private)
         Settings settings.AppSettings
+        FitterSettingsChangedListener event.listener
     end
     
     events (HasCallbackProperty, NotifyAccess = protected)
@@ -21,7 +22,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
     
     methods (Access = private)
         function onCheckboxValueChanged(obj, origin, event)
-            [fitmodes, fitmodesText] = enumeration('mftyre.v62.FitMode');
+            [fitmodes, fitmodesText] = enumeration('magicformula.v62.FitMode');
             checkboxText = origin.Text;
             I = strcmp(fitmodesText, checkboxText);
             fitmode = fitmodes(I);
@@ -62,8 +63,8 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
                 'Padding', 5*ones(1,4));
         end
         function setupCheckboxes(obj)
-            import mftyre.v62.FitMode
-            [~, fitmodes] = enumeration('mftyre.v62.FitMode');
+            import magicformula.v62.FitMode
+            [~, fitmodes] = enumeration('magicformula.v62.FitMode');
             for i = 1:numel(fitmodes)
                 cb = uicheckbox(obj.Grid, ...
                     'Text', fitmodes{i}, ...
@@ -82,13 +83,14 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
             setupGrid(obj)
             setupCheckboxes(obj)
             obj.FitModes = obj.Settings.Fitter.FitModes;
-            addlistener(obj.Settings.Fitter, 'SettingsChanged', ...
+            obj.FitterSettingsChangedListener = listener(...
+                obj.Settings.Fitter, 'SettingsChanged', ...
                 @(~,~) update(obj));
         end
         function updateCheckboxes(obj)
             checkboxes = obj.Checkboxes;
             set(checkboxes, 'Value', false)
-            fitmodes = enumeration('mftyre.v62.FitMode');
+            fitmodes = enumeration('magicformula.v62.FitMode');
             fitmodesSelected = obj.Settings.Fitter.FitModes;
             for i = 1:numel(fitmodesSelected)
                 fitmode = fitmodesSelected(i);
