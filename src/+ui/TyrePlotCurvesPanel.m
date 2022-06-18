@@ -138,6 +138,8 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                         units{i} = 'bar';
                     case {'FZW', 'FYW', 'FX'}
                         units{i} = 'N';
+                    case {'MZW', 'MXW', 'MYW'}
+                        units{i} = 'Nm';
                 end
             end
         end
@@ -365,14 +367,16 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                 
                 params = obj.Model.Parameters;
                 p = struct(params);
-                [FX, FYW] = magicformula.v62.eval(p, SLIPANGL, LONGSLIP, ...
-                    INCLANGL, INFLPRES, FZW, p.TYRESIDE);
+                [FX,FYW,MZW] = magicformula.v62.eval(p, ...
+                    SLIPANGL, LONGSLIP, INCLANGL, INFLPRES, FZW, p.TYRESIDE);
                 
                 switch yVar
                     case 'FX'
                         yVal = FX;
                     case 'FYW'
                         yVal = FYW;
+                    case 'MZW'
+                        yVal = MZW;
                     otherwise
                         warning('Invalid y-axis variable!')
                         cla(ax)
@@ -418,6 +422,8 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                         yVal = vertcat(measurements.FX);
                     case 'FYW'
                         yVal = vertcat(measurements.FYW);
+                    case 'MZW'
+                        yVal = vertcat(measurements.MZW);
                     otherwise
                         warning('Invalid y-axis variable!')
                         cla(ax)
@@ -628,7 +634,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.YAxisSettingLabel = uilabel(grid);
             obj.YAxisSettingLabel.Text = 'Y-Axis';
             obj.YAxisSettingDropDown = uidropdown(grid);
-            obj.YAxisSettingDropDown.Items = {'FX', 'FYW'};
+            obj.YAxisSettingDropDown.Items = {'FX', 'FYW', 'MZW'};
             obj.YAxisSettingDropDown.ValueChangedFcn = ...
                 @obj.onSettingsChanged;
             

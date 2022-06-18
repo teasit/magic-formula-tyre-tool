@@ -834,6 +834,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             fitmodesText = {
                 char(magicformula.v62.FitMode.Fx0)
                 char(magicformula.v62.FitMode.Fy0)
+                char(magicformula.v62.FitMode.Mz0)
                 char(magicformula.v62.FitMode.Fx)
                 char(magicformula.v62.FitMode.Fy)
                 };

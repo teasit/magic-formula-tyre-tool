@@ -69,7 +69,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
                 cb = uicheckbox(obj.Grid, ...
                     'Text', fitmodes{i}, ...
                     'ValueChangedFcn', @obj.onCheckboxValueChanged);
-                if any(strcmp(fitmodes{i}, {'Fz', 'Mz', 'Mz0', 'Mx', 'My'}))
+                if any(strcmp(fitmodes{i}, {'Fz', 'Mz', 'Mx', 'My'}))
                     % todo: enable these fitmodes after they are
                     % implemented in the Fitter class.
                     cb.Enable = false;
