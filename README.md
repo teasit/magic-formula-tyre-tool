@@ -2,6 +2,7 @@
 
 [![View Tool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/111375)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/teasit/magic-formula-tyre-tool)](https://github.com/teasit/magic-formula-tyre-tool/releases/latest)
+[![GitHub downloads](https://img.shields.io/github/downloads/teasit/magic-formula-tyre-tool/total)](https://github.com/teasit/magic-formula-tyre-tool/releases/latest)
 
 ![Screenshot Analysis Tab with Plots](/assets/img/App_Screenshot_Main.jpg)
 
