@@ -1040,11 +1040,12 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             if ~isempty(app.Settings)
                 try
                     app.Settings.save()
-                    clear AppSettings
                 catch
                     warning('Failed to save settings to persistent storage.')
                 end
             end
+            delete(app.Settings)
+            clear AppSettings
             delete(app.TyreModel)
             delete(app.TyreModelBackup)
             delete(app.TyreModelFitter)
