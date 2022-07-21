@@ -1,13 +1,13 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
   <configuration build-checksum="4228771701" file="C:\workspace\mftyre-matlab-tool\ToolboxPackager.prj" location="C:\workspace\mftyre-matlab-tool" name="ToolboxPackager" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>MagicFormulaTyreTool</param.appname>
-    <param.authnamewatermark />
-    <param.email />
+    <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
+    <param.email>teasdale@lightsaber.red</param.email>
     <param.company />
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.3.3</param.version>
+    <param.version>1.3.4</param.version>
     <param.output>${PROJECT_ROOT}\MagicFormulaTyreTool.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -76,8 +76,6 @@ MagicFormulaTyreTool_resources</param.exclude.filters>
     <param.additional.sw.mac.url />
     <param.additional.sw.linux.url />
     <unset>
-      <param.authnamewatermark />
-      <param.email />
       <param.company />
       <param.description />
       <param.output />
@@ -116,6 +114,7 @@ MagicFormulaTyreTool_resources</param.exclude.filters>
       <file>${PROJECT_ROOT}\doc</file>
       <file>${PROJECT_ROOT}\LICENSE</file>
       <file>${PROJECT_ROOT}\MagicFormulaTyreTool.mlappinstall</file>
+      <file>${PROJECT_ROOT}\MFTyreToolApp_resources</file>
       <file>${PROJECT_ROOT}\README.md</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
