@@ -27,6 +27,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         FitterStateButton       matlab.ui.control.StateButton
         SidePanelGrid matlab.ui.container.GridLayout
         FitterPanel ui.TyreFitterPanel
+        SearchBar ui.SearchBar
     end
     events (HasCallbackProperty, NotifyAccess = protected)
         FitterSettingsChanged
@@ -43,8 +44,21 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
     events (NotifyAccess = public)
         TyreModelChanged
         TyreModelFitterFinished
+        KeyPressed
     end
     methods(Access = private)
+        function onSearchPrevRequested(obj, ~, ~)
+            notify(obj.TyreParametersTable, 'SearchPrevRequested')
+        end
+        function onSearchNextRequested(obj, ~, ~)
+            notify(obj.TyreParametersTable, 'SearchNextRequested')
+        end
+        function onSearchResultsAvailable(obj, ~, e)
+            notify(obj.SearchBar, 'SearchResultsAvailable', e)
+        end
+        function onKeyPressed(obj, ~, e)
+            notify(obj.TyreParametersTable, 'KeyPressed', e)
+        end
         function onSaveModelRequested(obj, ~, ~)
             notify(obj, 'TyreModelSaveRequested')
         end
@@ -129,6 +143,9 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
                     'ColumnWidth', obj.ButtonsGridColumnWidthWithText);
             end
         end
+        function onSearchTextChanged(obj, ~, event)
+            notify(obj.TyreParametersTable, 'SearchTextChanged', event)
+        end
     end
     methods (Access = protected)
         function setupButtons(obj)
@@ -180,7 +197,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
                 'Enable', false, ...
                 'ButtonPushedFcn', @obj.onClearModelReq);
             obj.FitterStateButton = uibutton(obj.ButtonsGrid, 'state', ...
-                'Text', 'Show Fitter', ...
+                'Text', 'Show Sidebar', ...
                 'Tooltip', 'Shows/Hides fitter panel.', ...
                 'Icon', 'gears-solid.svg', ...
                 'Enable', true, ...
@@ -193,10 +210,11 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.ButtonsTexts = [{btns(1:end-1).Text} {btns(end).Text}];
         end
         function setupTyreParametersTable(obj)
-            obj.TyreParametersTable = ui.TyreParametersTable(obj.MainGrid);
+            obj.TyreParametersTable = ui.TyreParametersTable(obj.MainGrid, ...
+                'TyreModelEditedFcn', @obj.onTyreModelEdited, ...
+                'SearchResultsAvailableFcn', @obj.onSearchResultsAvailable);
             obj.TyreParametersTable.Layout.Row = 2;
             obj.TyreParametersTable.Layout.Column = [1 2];
-            obj.TyreParametersTable.TyreModelEditedFcn = @obj.onTyreModelEdited;
         end
         function setupMainGrid(obj)
             obj.MainGrid = uigridlayout(obj, ...
@@ -208,7 +226,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
         end
         function setupSidePanel(obj)
             obj.SidePanelGrid = uigridlayout(obj.MainGrid, ...
-                'RowHeight', {'1x'}, ...
+                'RowHeight', {'fit', 'fit'}, ...
                 'ColumnWidth', {'fit'}, ...
                 'ColumnSpacing', 0, ...
                 'Padding', zeros(1,4), ...
@@ -216,6 +234,11 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
                 'Visible', true);
             obj.SidePanelGrid.Layout.Row = 2;
             obj.SidePanelGrid.Layout.Column = 2;
+            
+            obj.SearchBar = ui.SearchBar(obj.SidePanelGrid, ...
+                'SearchTextChangedFcn', @obj.onSearchTextChanged, ...
+                'SearchPrevRequested', @obj.onSearchPrevRequested, ...
+                'SearchNextRequested', @obj.onSearchNextRequested);
             
             obj.FitterPanel = ui.TyreFitterPanel(obj.SidePanelGrid, ...
                 'FitterSolverSettingsChangedFcn', ...
@@ -227,6 +250,7 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             addlistener(obj, 'TyreModelChanged', @obj.onTyreModelChanged);
             addlistener(obj, 'TyreModelFitterFinished', ...
                 @obj.onTyreModelFitterFinished);
+            addlistener(obj, 'KeyPressed', @obj.onKeyPressed);
         end
     end
     methods (Access = protected)

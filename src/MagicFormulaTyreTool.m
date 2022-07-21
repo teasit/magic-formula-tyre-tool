@@ -135,6 +135,9 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
         end
     end
     methods (Access = private)
+        function onKeyPress(app, ~, e)
+            notify(app.TyreModelPanel, 'KeyPressed', e)
+        end
         function onUiFigureSizeChanged(app, ~, ~)
             position = app.UIFigure.Position;
             width = position(3);
@@ -715,9 +718,10 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 'Position', position, ...
                 'Name', name, ...
                 'Icon', 'tyre_icon.png', ...
-                'AutoResizeChildren', 'off');
-            app.UIFigure.SizeChangedFcn = @app.onUiFigureSizeChanged;
-            app.UIFigure.CloseRequestFcn = @app.onUiFigureCloseRequest;
+                'AutoResizeChildren', 'off', ...
+                'SizeChangedFcn', @app.onUiFigureSizeChanged, ...
+                'CloseRequestFcn', @app.onUiFigureCloseRequest, ...
+                'KeyPressFcn', @app.onKeyPress);
         end
         function createGrid(app)
             app.GridMain = uigridlayout(app.UIFigure, ...
