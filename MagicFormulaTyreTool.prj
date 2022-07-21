@@ -1,8 +1,8 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2480098258" file="C:\Users\Tom\Documents\mftyre-tool-matlab\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\mftyre-tool-matlab" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4096366514" file="C:\workspace\mftyre-matlab-tool\MagicFormulaTyreTool.prj" location="C:\workspace\mftyre-matlab-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
     <param.appname>MagicFormulaTyreTool</param.appname>
-    <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
-    <param.email>teasdale@lightsaber.red</param.email>
+    <param.authnamewatermark />
+    <param.email />
     <param.company />
     <param.icon>${PROJECT_ROOT}\MagicFormulaTyreTool_resources\icon_24.png</param.icon>
     <param.icons>
@@ -13,7 +13,7 @@
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.3.2</param.version>
+    <param.version>1.3.3</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Optimization Toolbox</item>
@@ -119,7 +119,7 @@
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\Tom\Documents" name="mftyre-tool-matlab" optional="false">C:\Users\Tom\Documents\mftyre-tool-matlab</file>
+      <file location="C:\workspace" name="mftyre-matlab-tool" optional="false">C:\workspace\mftyre-matlab-tool</file>
     </build-deliverables>
     <workflow />
     <matlab>

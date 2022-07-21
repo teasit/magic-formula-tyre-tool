@@ -1,3 +1,3 @@
 # Changelog
 
-- fix: no more warning that AppSettings couldnt be deleted on App Exit
+- new: search bar for tyre model; searches through parameter names and descriptions
