@@ -133,6 +133,18 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                     return
             end
         end
+        function verifyMatlabVersion(app)
+            releaseCreated = app.About.CreatedWithRelease;
+            appName = app.About.Name;
+            isOlder = isMATLABReleaseOlderThan(releaseCreated);
+            if isOlder
+                releaseInstalled = version('-release');
+                msg = ['''%s'' was developed with ''%s''. ' ...
+                    'The app might not work correctly with ''%s''.' ...
+                    newline()];
+                warning(msg, appName, releaseCreated, releaseInstalled)
+            end
+        end
     end
     methods (Access = private)
         function onKeyPress(app, ~, e)
@@ -1024,8 +1036,8 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             close(dlg)
         end
         function app = MagicFormulaTyreTool
+            verifyMatlabVersion(app);
             runningApp = getRunningApp(app);
-            
             if isempty(runningApp)
                 initSettings(app)
                 createComponents(app)

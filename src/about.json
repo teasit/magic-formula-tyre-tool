@@ -6,5 +6,6 @@
     ],
     "Source": "https://github.com/teasit/magic-formula-tyre-tool",
     "FileExchange": "https://mathworks.com/matlabcentral/fileexchange/111375",
-    "Contact": "teasdale@lightsaber.red"
+    "Contact": "teasdale@lightsaber.red",
+	"CreatedWithRelease": "R2021a"
 }
