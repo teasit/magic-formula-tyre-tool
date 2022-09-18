@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1072977547" file="C:\workspace\mftyre-matlab-tool\MagicFormulaTyreTool.prj" location="C:\workspace\mftyre-matlab-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4071673865" file="C:\workspace\mftyre-matlab-tool\MagicFormulaTyreTool.prj" location="C:\workspace\mftyre-matlab-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
     <param.appname>MagicFormulaTyreTool</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -11,9 +11,9 @@
       <file>${PROJECT_ROOT}\MagicFormulaTyreTool_resources\icon_16.png</file>
     </param.icons>
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
-    <param.description />
+    <param.description>https://github.com/teasit/magic-formula-tyre-tool</param.description>
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.3.5</param.version>
+    <param.version>1.3.6</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Optimization Toolbox</item>
@@ -34,7 +34,6 @@
     <param.guid>25bcb2d7-69d2-4790-a114-9349ec5e2889</param.guid>
     <unset>
       <param.company />
-      <param.description />
       <param.platforms />
       <param.output />
     </unset>
@@ -71,6 +70,8 @@
       <file>${PROJECT_ROOT}\src\+settings\TyreAnalysisPanelViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\TyreModelPanelViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\TyreParametersTableViewSettings.m</file>
+      <file>${PROJECT_ROOT}\src\+settings\TyrePlotCurvesPanelViewSettings.m</file>
+      <file>${PROJECT_ROOT}\src\+settings\TyrePlotFrictionEllipsePanelViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\ViewLayoutSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\ViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+ui\FrictionEllipseAxes.m</file>
