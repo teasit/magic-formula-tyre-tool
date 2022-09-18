@@ -5,13 +5,14 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
         Measurements tydex.Measurement = tydex.Measurement.empty
         Model magicformula.Model = magicformula.v62.Model.empty
     end
-    properties (Access = private, Transient, NonCopyable)
+    properties (Access = ?matlab.unittest.TestCase, Transient, NonCopyable)
         Grid                        matlab.ui.container.GridLayout
         GridPlot                    matlab.ui.container.GridLayout
         ButtonsPlotType             matlab.ui.control.StateButton
         ButtonsGrid                 matlab.ui.container.GridLayout
         ShowSidebarStateButton      matlab.ui.control.StateButton
-        Plot                   matlab.ui.componentcontainer.ComponentContainer
+        PlotCurves                  ui.TyrePlotCurvesPanel
+        PlotEllipse                 ui.TyrePlotFrictionEllipsePanel
     end
     properties (Access = protected)
         Settings settings.AppSettings
@@ -28,13 +29,15 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             model = event.Model;
             obj.Model = model;
             e = events.ModelChangedEventData(model);
-            notify(obj.Plot, 'TyreModelChanged', e)
+            notify(obj.PlotCurves, 'TyreModelChanged', e)
+            notify(obj.PlotEllipse, 'TyreModelChanged', e)
         end
         function onDataChanged(obj, ~, event)
             measurements = event.Measurements;
             obj.Measurements = measurements;
             e = events.TyreMeasurementsChanged(measurements);
-            notify(obj.Plot, 'TyreDataChanged', e)
+            notify(obj.PlotCurves, 'TyreDataChanged', e)
+            notify(obj.PlotEllipse, 'TyreDataChanged', e)
         end
     end
     methods(Access = private)
@@ -52,13 +55,23 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             set(buttons(I), 'Value', true)
             set(buttons(I), 'Enable', 'off')
             
+            eventModel = events.ModelChangedEventData(obj.Model);
+            eventData = events.TyreMeasurementsChanged(obj.Measurements);
+            
             plotType = buttonPressed.Tag;
             switch plotType
                 case 'TyreCurves'
                     setupPlotCurves(obj)
+                    plot = obj.PlotCurves;
                 case 'FrictionEllipse'
                     setupPlotEllipse(obj)
+                    plot = obj.PlotEllipse;
             end
+            if isempty(plot) || ~isvalid(plot)
+                return
+            end
+            notify(plot, 'TyreModelChanged', eventModel)
+            notify(plot, 'TyreDataChanged', eventData)
         end
         function onUiFigureSizeChanged(obj, ~, ~)
             parent = obj.Parent;
@@ -74,39 +87,43 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             minWidthButtonsWithText = sum([buttonWidths{:}]) ...
                 + (numel(buttons)+2)*buttonsGrid.ColumnSpacing;
             removeTextFromButtons = width < minWidthButtonsWithText;
+            widthOnlyIcon = obj.ButtonsGridColumnWidthOnlyIcon;
+            widthWithText = obj.ButtonsGridColumnWidthWithText;
             if removeTextFromButtons
                 set(buttons, 'Text', '')
-                set(buttonsGrid, ...
-                    'ColumnWidth', obj.ButtonsGridColumnWidthOnlyIcon);
+                set(buttonsGrid, 'ColumnWidth', widthOnlyIcon);
             else
                 texts = obj.ButtonsTexts;
                 for i = 1:numel(buttons)
                     btn = buttons(i);
                     btn.Text = texts{i};
                 end
-                set(buttonsGrid, ...
-                    'ColumnWidth', obj.ButtonsGridColumnWidthWithText);
+                set(buttonsGrid, 'ColumnWidth', widthWithText);
             end
         end
     end
     methods(Access = protected)
         function setupPlotEllipse(obj)
-            delete(obj.GridPlot)
-            setupGridPlot(obj)
-            obj.Plot = ui.TyrePlotFrictionEllipsePanel(obj.GridPlot);
-            e = events.ModelChangedEventData(obj.Model);
-            notify(obj.Plot, 'TyreModelChanged', e)
-            e = events.TyreMeasurementsChanged(obj.Measurements);
-            notify(obj.Plot, 'TyreDataChanged', e)
+            set(obj.PlotCurves, 'Visible', 'off')
+            if isempty(obj.PlotEllipse) || ~isvalid(obj.PlotEllipse)
+                p = ui.TyrePlotFrictionEllipsePanel(obj.GridPlot);
+                p.Layout.Row = 1;
+                p.Layout.Column = 1;
+                obj.PlotEllipse = p;
+            else
+                set(obj.PlotEllipse, 'Visible', 'on')
+            end
         end
         function setupPlotCurves(obj)
-            delete(obj.GridPlot)
-            setupGridPlot(obj)
-            obj.Plot = ui.TyrePlotCurvesPanel(obj.GridPlot);
-            e = events.ModelChangedEventData(obj.Model);
-            notify(obj.Plot, 'TyreModelChanged', e)
-            e = events.TyreMeasurementsChanged(obj.Measurements);
-            notify(obj.Plot, 'TyreDataChanged', e)
+            set(obj.PlotEllipse, 'Visible', 'off')
+            if isempty(obj.PlotCurves) || ~isvalid(obj.PlotCurves)
+                p = ui.TyrePlotCurvesPanel(obj.GridPlot);
+                p.Layout.Row = 1;
+                p.Layout.Column = 1;
+                obj.PlotCurves = p;
+            else
+                set(obj.PlotCurves, 'Visible', 'on')
+            end
         end
         function setupGrid(obj)
             obj.Grid = uigridlayout(obj, ...
@@ -170,6 +187,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.Settings = settings.AppSettings();
             setupGrid(obj)
             setupButtons(obj)
+            setupGridPlot(obj)
             setupPlotCurves(obj)
             setupListeners(obj)
             set(obj, 'SizeChangedFcn', @obj.onUiFigureSizeChanged)

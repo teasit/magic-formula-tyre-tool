@@ -3,27 +3,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
     
     properties
         Model magicformula.Model = magicformula.v62.Model.empty
-    end
-    properties
-        SLIPANGL_Max double = 15
-        SLIPANGL_Step double = 3
-        LONGSLIP_Max double = 0.15
-        LONGSLIP_Step double = 0.01
-        INFLPRES double = 80E3
-        INCLANGL double = 0
-        FZW double = 1E3
-        TYRESIDE double = 0
-    end
-    properties
-        Limits double = [5000 5000]
-    end
-    properties
-        AxisEqual logical = true
-        AxisManualLimits logical = true
-        LegendOn logical = true
-        Marker char = 'none'
-        MarkerSize double = 10
-        LineWidth double = 1
+        Settings settings.AppSettings
     end
     properties (Access = private, Transient, NonCopyable)
         Grid matlab.ui.container.GridLayout
@@ -46,12 +26,12 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             setupAxes(obj)
         end
         function setupAxes(obj)
+            obj.Settings = settings.AppSettings();
             ax = uiaxes(obj.Grid);
             grid(ax, 'on')
             hold(ax, 'on')
             xlabel(ax, 'FY / N')
             ylabel(ax, 'FX / N')
-            datacursormode on
             obj.Axes = ax;
         end
         function update(obj)
@@ -63,51 +43,53 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
         end
         function updateAxes(obj)
             model = obj.Model;
+            s = obj.Settings;
+            s = s.View.TyreAnalysisPanel.TyrePlotFrictionEllipsePanel;
             
             ax = obj.Axes;
             cla(ax)
             
-            if obj.AxisEqual
+            if s.AxisEqual
                 axis(ax, 'equal')
             else
                 axis(ax, 'normal')
             end
             
-            if obj.AxisManualLimits
-                limits = obj.Limits;
+            if s.AxisManualLimits
+                limits = s.Limits;
                 X = [-1, 1]*limits(1);
                 Y = [-1, 1]*limits(2);
-                xlim(X)
-                ylim(Y)
+                xlim(ax,X)
+                ylim(ax,Y)
             else
-                xlim('auto')
-                ylim('auto')
+                xlim(ax,'auto')
+                ylim(ax,'auto')
             end
             
-            legend off
+            legend(ax, 'off')
             
             n = 200;
-            marker = obj.Marker;
-            markerSize = obj.MarkerSize;
-            lineWidth = obj.LineWidth;
+            marker = s.Marker;
+            markerSize = s.MarkerSize;
+            lineWidth = s.LineWidth;
             
-            SA_max = obj.SLIPANGL_Max;
-            SA_step = obj.SLIPANGL_Step;
+            SA_max = s.SLIPANGL_Max;
+            SA_step = s.SLIPANGL_Step;
             SA_sweep = deg2rad(linspace(-SA_max, SA_max, n));
             SA_const = deg2rad(-SA_max:SA_step:SA_max);
             
-            SX_max = obj.LONGSLIP_Max;
-            SX_step = obj.LONGSLIP_Step;
+            SX_max = s.LONGSLIP_Max;
+            SX_step = s.LONGSLIP_Step;
             SX_sweep = linspace(-SX_max, SX_max, n);
             SX_const = -SX_max:SX_step:SX_max;
             
             n_SA = numel(SA_const);
             n_SX = numel(SX_const);
             
-            P = obj.INFLPRES;
-            FZ = obj.FZW;
-            IA = obj.INCLANGL;
-            TS = obj.TYRESIDE;
+            P = s.INFLPRES;
+            FZ = s.FZW;
+            IA = s.INCLANGL;
+            TS = s.TYRESIDE;
             
             colors = get(ax, 'colororder');
             
@@ -145,12 +127,12 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             end
             hSlipAngleSweeps = h(end);
             
-            if obj.LegendOn
+            if s.LegendOn
                 subset = [hSlipRatioSweeps hSlipAngleSweeps];
                 labels = {
                     'SLIPANGL = const.'
                     'LONGSLIP = const.'};
-                legend(subset, labels, ...
+                legend(ax, subset, labels, ...
                     'Location', 'bestoutside', ...
                     'Orientation', 'horizontal')
             end
