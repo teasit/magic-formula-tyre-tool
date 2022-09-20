@@ -42,7 +42,12 @@ classdef (Abstract) AbstractSettings < handle
                     else
                         settingObj = settingsGroup.(settingName);
                     end
-                    settingObj.PersonalValue = setting;
+                    try
+                        settingObj.PersonalValue = setting;
+                    catch
+                        message = 'Could not save setting ''%s''.';
+                        warning(message, settingName)
+                    end
                 end
             end
         end
