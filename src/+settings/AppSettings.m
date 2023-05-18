@@ -4,6 +4,7 @@ classdef AppSettings < settings.AbstractSettings
         Fitter settings.FitterSettings
         View settings.ViewSettings
         LastSession settings.LastSessionSettings
+        Version char
     end
     methods
         function load(obj)
@@ -18,6 +19,10 @@ classdef AppSettings < settings.AbstractSettings
         end
         function save(obj)
             try
+                s = settings();
+                if ~hasGroup(s, obj.SettingsGroupTopLevel)
+                    init(obj);
+                end
                 settingsGroup = settings().(obj.SettingsGroupTopLevel);
                 save@settings.AbstractSettings(obj, settingsGroup)
             catch ME
@@ -33,10 +38,10 @@ classdef AppSettings < settings.AbstractSettings
             try
                 s = settings();
                 if hasGroup(s, obj.SettingsGroupTopLevel)
-                    load(obj)
+                    obj.load()
                 else
                     addGroup(s, obj.SettingsGroupTopLevel);
-                    save(obj)
+                    obj.save()
                 end
             catch ME
                 E = exceptions.CouldNotInitAppSettings();
@@ -46,10 +51,7 @@ classdef AppSettings < settings.AbstractSettings
         end
         function reset(obj)
             try
-                s = settings();
-                if hasGroup(s, obj.SettingsGroupTopLevel)
-                    removeGroup(s, obj.SettingsGroupTopLevel)
-                end
+                settings.AppSettings.clear()
                 init(obj)
                 save(obj)
             catch ME
@@ -61,7 +63,11 @@ classdef AppSettings < settings.AbstractSettings
         function obj = AppSettings()
             persistent pobj
             if isempty(pobj) || ~isvalid(pobj)
-                init(obj)
+                try
+                    init(obj)
+                catch
+                    reset(obj)
+                end
                 pobj = obj;
             else
                 obj = pobj;
@@ -71,6 +77,26 @@ classdef AppSettings < settings.AbstractSettings
             delete(obj.Fitter)
             delete(obj.View)
             delete(obj.LastSession)
+        end
+    end
+    methods (Static)
+        function v = version()
+            v = char.empty;
+            s = settings();
+            appName = settings.AbstractSettings.SettingsGroupTopLevel;
+            if hasGroup(s, appName)
+                appSettings = s.(appName);
+                if hasSetting(appSettings, 'Version')
+                    v = appSettings.Version.ActiveValue;
+                end
+            end
+        end
+        function clear()
+            s = settings();
+            group = settings.AbstractSettings.SettingsGroupTopLevel;
+            if hasGroup(s, group)
+                removeGroup(s, group)
+            end
         end
     end
 end

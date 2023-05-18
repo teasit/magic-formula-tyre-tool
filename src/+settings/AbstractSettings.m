@@ -3,7 +3,7 @@ classdef (Abstract) AbstractSettings < handle
     %Using this class, recursion is easier to implement, because if any
     %settings class has a child inheriting from AbstractSettings, the
     %recursion must continue.
-    properties (Constant, Access = protected)
+    properties (Constant, Access = public)
         %Name of top-level Settings Group: settings().<SettingsGroup>
         SettingsGroupTopLevel = 'MagicFormulaTyreTool'
     end

@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2983545422" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="703001467" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
     <param.appname>MagicFormulaTyreTool</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -13,7 +13,7 @@
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
     <param.description>https://github.com/teasit/magic-formula-tyre-tool</param.description>
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.3.7</param.version>
+    <param.version>1.4.0</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Optimization Toolbox</item>
@@ -25,9 +25,9 @@
       <item>8</item>
     </param.products.id>
     <param.products.version>
-      <item>9.10</item>
+      <item>9.13</item>
+      <item>9.4</item>
       <item>9.1</item>
-      <item>8.6</item>
     </param.products.version>
     <param.platforms />
     <param.output>${PROJECT_ROOT}</param.output>
@@ -62,7 +62,6 @@
       <file>${PROJECT_ROOT}\src\+exceptions\CouldNotResetAppSettings.m</file>
       <file>${PROJECT_ROOT}\src\+exceptions\CouldNotSaveAppSettings.m</file>
       <file>${PROJECT_ROOT}\src\+exceptions\InvalidSolverOptions.m</file>
-      <file>${PROJECT_ROOT}\src\+exceptions\UnknownModelParameter.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\checkUpdateAvailable.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\fitterOutputFcn.m</file>
       <file>${PROJECT_ROOT}\src\+settings\AbstractSettings.m</file>
@@ -92,30 +91,48 @@
       <file>${PROJECT_ROOT}\src\+ui\TyrePlotCurvesPanel.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyrePlotFrictionEllipsePanel.m</file>
       <file>${PROJECT_ROOT}\src\about.json</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+exceptions\EmptyMeasurement.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+exceptions\FitterFailed.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+exceptions\NoMeasurementForFitMode.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\+equations\Fx.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\+equations\Fx0.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\+equations\Fy.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\+equations\Fy0.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\eval.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\FitMode.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\Fitter.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\getFitParamNames.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\Model.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\Parameter.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\ParameterFittable.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v62\Parameters.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\Model.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tir\TyrePropertiesFileCreator.m</file>
-      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tir\TyrePropertiesFileReader.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+exceptions\EmptyMeasurement.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+exceptions\EmptyMeasurementChannel.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+exceptions\FitterFailed.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+exceptions\MissingParameterToFit.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+exceptions\NoMeasurementForFitMode.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+exceptions\UnknownModelParameter.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v52\Parameters.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\eval.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Fitter.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Fx.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Fx0.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Fy.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Fy0.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Mx.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\My.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Mz.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Mz0.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\+v61\Parameters.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\FitMode.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\InputArgumentParser.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\Parameter.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\ParameterDescriptions.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\ParameterFittable.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\ParameterFittingSettingsExporter.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\ParameterFittingSettingsImporter.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\Parameters.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\TyrePropertiesFileCreator.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+magicformula\TyrePropertiesFileReader.m</file>
       <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\ConstantParameter.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\FileInterface.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\FileReader.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\FileWriter.m</file>
       <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\MeasuredParameter.m</file>
       <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\Measurement.m</file>
       <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\Metadata.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\ModelParameter.m</file>
       <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\Parameter.m</file>
       <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\+tydex\Parser.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\@MagicFormulaTyre\MagicFormulaTyre.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\@MagicFormulaTyre\saveTIR.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\enum\MagicFormulaVersion.m</file>
+      <file>${PROJECT_ROOT}\src\magic-formula-tyre-library\src\magicformula.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}\assets</file>
@@ -127,15 +144,8 @@
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2021a</root>
-      <toolboxes>
-        <toolbox name="matlabcoder" />
-      </toolboxes>
-      <toolbox>
-        <matlabcoder>
-          <enabled>true</enabled>
-        </matlabcoder>
-      </toolbox>
+      <root>C:\Program Files\MATLAB\R2022b</root>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>false</unix>

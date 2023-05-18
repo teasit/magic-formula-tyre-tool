@@ -2,7 +2,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
     %TYREPLOTCURVESPANEL Plot X-Var sweeps with corresponding Y-Var.
     
     properties
-        Model magicformula.v62.Model = magicformula.v62.Model.empty
+        Model MagicFormulaTyre = MagicFormulaTyre.empty
         Measurements tydex.Measurement = tydex.Measurement.empty
     end
     properties (Access = private)
@@ -124,6 +124,8 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                         units{i} = 'bar';
                     case {'FZW', 'FYW', 'FX'}
                         units{i} = 'N';
+                    case {'MZW', 'MXW', 'MYW'}
+                        units{i} = 'Nm';
                 end
             end
         end
@@ -200,10 +202,17 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                 end
             end
             
+            vars = obj.SteadyStateNamesAll;
+            isFZ = strcmpi(vars, 'FZW');
+            sortMethod = cell(numel(vars),1);
+            sortMethod(:) = {'ascend'};
+            sortMethod(isFZ) = {'descend'};
             for i = 1:size(steadyStateValues,2)
                 vals = steadyStateValues{:,i};
-                [~, idxUnique] = unique([vals{:}]);
-                steadyStateValues{:,i} = vals(idxUnique);
+                valsUnique = unique([vals{:}]');
+                valsUniqueSorted = sort(valsUnique, sortMethod{i});
+                valsUniqueSorted = num2cell(valsUniqueSorted);
+                steadyStateValues{:,i} = valsUniqueSorted;
             end
             
             s.SteadyStateValues = steadyStateValues;
@@ -357,16 +366,28 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                         return
                 end
                 
-                params = obj.Model.Parameters;
-                p = struct(params);
-                [FX, FYW] = magicformula.v62.eval(p, SLIPANGL, LONGSLIP, ...
-                    INCLANGL, INFLPRES, FZW, p.TYRESIDE);
-                
+                tyre = obj.Model;
                 switch yVar
                     case 'FX'
+                        FX = magicformula(tyre, ...
+                            LONGSLIP, SLIPANGL, FZW, INFLPRES, INCLANGL);
                         yVal = FX;
                     case 'FYW'
-                        yVal = FYW;
+                        [~,FY] = magicformula(tyre, ...
+                            LONGSLIP, SLIPANGL, FZW, INFLPRES, INCLANGL);
+                        yVal = FY;
+                    case 'MZW'
+                        [~,~,MZ] = magicformula(tyre, ...
+                            LONGSLIP, SLIPANGL, FZW, INFLPRES, INCLANGL);
+                        yVal = MZ;
+                    case 'MYW'
+                        [~,~,~,MY] = magicformula(tyre, ...
+                            LONGSLIP, SLIPANGL, FZW, INFLPRES, INCLANGL);
+                        yVal = MY;
+                    case 'MXW'
+                        [~,~,~,~,MX] = magicformula(tyre, ...
+                            LONGSLIP, SLIPANGL, FZW, INFLPRES, INCLANGL);
+                        yVal = MX;
                     otherwise
                         warning('Invalid y-axis variable!')
                         cla(ax)
@@ -412,15 +433,29 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                         yVal = vertcat(measurements.FX);
                     case 'FYW'
                         yVal = vertcat(measurements.FYW);
+                    case 'MZW'
+                        yVal = vertcat(measurements.MZW);
+                    case 'MYW'
+                        yVal = vertcat(measurements.MYW);
+                    case 'MXW'
+                        yVal = vertcat(measurements.MXW);
                     otherwise
                         warning('Invalid y-axis variable!')
                         cla(ax)
                         return
                 end
-                
-                hData = plot(ax, xVal, yVal, ...
+
+                if isempty(yVal)
+                    fig = ancestor(obj, 'figure');
+                    message = sprintf('No data for channel ''%s''!', yVar);
+                    title = 'Tyre Analysis';
+                    uialert(fig, message, title)
+                else
+                    hData = plot(ax, xVal, yVal, ...
                     'Marker', '.', ...
                     'LineStyle', 'none');
+                end
+                
                 if plotModel
                     color = hModel.Color;
                     set(hData, 'Color', color);
@@ -641,7 +676,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.YAxisSettingLabel = uilabel(grid, ...
                 'Text', 'Y-Axis');
             obj.YAxisSettingDropDown = uidropdown(grid, ...
-                'Items', {'FX','FYW'}, ...
+                'Items', {'FX','FYW','MXW','MYW','MZW'}, ...
                 'Tag', 'YAxis', ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
             

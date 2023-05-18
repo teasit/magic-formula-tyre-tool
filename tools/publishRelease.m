@@ -14,6 +14,12 @@ if versionInvalid
     error('Invalid version pattern. Example: v1.0.1')
 end
 
+results = runtests('OutputDetail', 0);
+failed = [results.Failed];
+if any(failed)
+    error('Unit Tests failed. Aborted release publish')
+end
+
 updateVersionPackager(packagerFile, version)
 matlab.apputil.package(packagerFile)
 matlab.addons.toolbox.toolboxVersion(packagerToolboxFile, erase(version, 'v'));

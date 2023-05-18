@@ -1,22 +1,18 @@
 classdef FitterSettings < settings.AbstractSettings
     %FITTERSETTINGS Contains app settings for fitter
     properties (SetObservable, AbortSet)
-        FitModes magicformula.v62.FitMode = magicformula.v62.FitMode.empty
-        OptimizerSettings optim.options.Fmincon = optimoptions('fmincon');
+        FitModes magicformula.FitMode = magicformula.FitMode.empty
+        DownsampleFactor double = double.empty
+        OptimizerSettings struct = struct.empty
     end
     methods
         function set.OptimizerSettings(obj, x)
             switch class(x)
                 case 'optim.options.Fmincon'
-                    obj.OptimizerSettings = x;
+                    obj.OptimizerSettings = struct(x);
                 case 'struct'
-                    obj.OptimizerSettings.Algorithm = x.Algorithm;
-                    obj.OptimizerSettings.MaxIterations = x.MaxIter;
-                    obj.OptimizerSettings.UseParallel = x.UseParallel;
-                    obj.OptimizerSettings.MaxFunctionEvaluations = x.MaxFunEvals;
+                    obj.OptimizerSettings = x;
             end
-        end
-        function obj = FitterSettings()
         end
     end
 end

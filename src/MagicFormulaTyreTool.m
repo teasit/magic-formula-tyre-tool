@@ -3,13 +3,13 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
     %   https://github.com/teasit/magic-formula-tyre-tool
     
     properties (Access = private)
-        TyreModel magicformula.Model = magicformula.v62.Model.empty()
-        TyreModelBackup magicformula.Model = magicformula.v62.Model.empty()
-        TyreModelFitted magicformula.Model = magicformula.v62.Model.empty()
+        TyreModel MagicFormulaTyre = MagicFormulaTyre.empty()
+        TyreModelBackup MagicFormulaTyre = MagicFormulaTyre.empty()
+        TyreModelFitted MagicFormulaTyre = MagicFormulaTyre.empty()
         TyreMeasurements tydex.Measurement
         TyreMeasurementsSelected tydex.Measurement
         TyreMeasurementsSelectionIndices logical
-        TyreModelFitter magicformula.v62.Fitter
+        TyreModelFitter magicformula.v61.Fitter
         
         %App settings, e.g. state of table filters
         Settings settings.AppSettings
@@ -19,9 +19,6 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
     properties (Access = private)
         %Stores about configuration values, e.g. application version.
         About struct = MagicFormulaTyreTool.initAboutConfiguration()
-        
-        %Stores default solver (fmincon) settings e.g. max iterations.
-        SolverOptionsDefault = MagicFormulaTyreTool.initSolverOptions()
     end
     properties (Transient, Access = private)
         %If user selects a directory, it is saved and reused to accelerate
@@ -58,12 +55,6 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             text = fileread(file);
             config = jsondecode(text);
         end
-        function opts = initSolverOptions()
-            opts = optimoptions('fmincon');
-            opts.MaxFunctionEvaluations = 3000;
-            opts.MaxIterations = 1000;
-            opts.UseParallel = false;
-        end
         function file = dialogSaveTyreModel(model)
             filter = '.tir';
             defname = 'magicformula.tir';
@@ -75,7 +66,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             end
             file = fullfile(path, fileName);
             try
-                model.exportTyrePropertiesFile(file);
+                model.saveTIR(file);
             catch sourceException
                 baseException = exceptions.CouldNotExportTIR(fileName);
                 baseException = addCause(baseException, sourceException);
@@ -90,11 +81,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 params = [];
                 return
             end
-            constants = measurements(end).Constant;
-            constantNames = {constants.Name};
-            queryNames = {'FNOMIN', 'NOMPRES'};
-            I = contains(constantNames, queryNames);
-            params = constants(I);
+            params = measurements(end).ModelParameters;
         end
         function dialogApplyParamsFromMeasurements(app, params)
             fig = app.UIFigure;
@@ -222,7 +209,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             notify(app.TyreAnalysisPanel, 'TyreModelChanged', evtdata)
         end
         function onSelectFitModesMenuSelected(app, source, ~)
-            [fitmodes, fitmodeNames] = enumeration('magicformula.v62.FitMode');
+            [fitmodes, fitmodeNames] = enumeration('magicformula.FitMode');
             fitmodeName = source.Text;
             I = strcmp(fitmodeNames, fitmodeName);
             fitmode = fitmodes(I);
@@ -249,7 +236,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             
             file = fullfile(path, fileName);
             try
-                model = magicformula.v62.Model(file);
+                model = MagicFormulaTyre(file);
                 app.setTyreModel(model)
             catch cause
                 exception = exceptions.CouldNotImportTIR(fileName);
@@ -260,7 +247,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
         function onClearModelRequested(app, ~, ~)
             delete(app.TyreModel)
             delete(app.TyreModelBackup)
-            modelEmpty = magicformula.v62.Model.empty;
+            modelEmpty = MagicFormulaTyre.empty;
             app.setTyreModel(modelEmpty)
         end
         function onImportMeasurementsRequested(app, ~, ~)
@@ -414,7 +401,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             app.TyreMeasurementsPanel.addMeasurementFitModes(flagsMap);
         end
         function onStartFittingRequested(app, ~, ~)
-            import magicformula.v62.FitMode
+            import magicformula.FitMode
             
             fig = app.UIFigure;
             title = 'Tyre Model Fitter';
@@ -441,6 +428,9 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 return
             end
             
+            downsampleFactor = app.Settings.Fitter.DownsampleFactor;
+            measurements = measurements.downsample(downsampleFactor, 0);
+
             fitter = app.TyreModelFitter;
             fitter.Parameters = params;
             fitter.Measurements = measurements;
@@ -484,7 +474,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                     'Details printed to logfile/console.'];
                 uialert(fig, msg, title, 'icon', icon)
             catch ME
-                paramsFitted = magicformula.v62.Parameters.empty;
+                paramsFitted = magicformula.v61.Parameters.empty;
                 e = events.TyreModelFitterFinished(paramsFitted);
                 notify(app.TyreModelPanel, 'TyreModelFitterFinished', e)
                 
@@ -497,8 +487,12 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 
                 msg = ['Fitting process FAILED!' newline() newline()];
                 switch class(cause)
-                    case 'exceptions.NoMeasurementForFitMode'
-                        fitmode = cause.FitMode;
+                    case 'magicformula.exceptions.EmptyMeasurementChannel'
+                        msg = [msg 'Cause:' newline() ...
+                            'Loaded measurements do not have data ' ...
+                            'for channel ''%s''.'];
+                        msg = sprintf(msg, cause.Channel);
+                    case 'magicformula.exceptions.NoMeasurementForFitMode'
                         msg = [msg 'Cause:' newline() ...
                             'Loaded measurements do not contain ' ...
                             'data for selected fitmode ''%s''. ' ...
@@ -511,7 +505,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                             'Similarly, fitting ''Fy0'' requires slip ' ...
                             'angle sweeps and ''Fy'' also requires ' ...
                             'those sweeps at interval-fixed slip ratios.'];
-                        msg = sprintf(msg, fitmode);
+                        msg = sprintf(msg, cause.FitMode);
                     otherwise
                         msg = [msg 'Details printed to logfile/console.'];
                 end
@@ -534,7 +528,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 end
             end
             
-            modelNew = magicformula.v62.Model();
+            modelNew = MagicFormulaTyre();
             file = MagicFormulaTyreTool.dialogSaveTyreModel(modelNew);
             if isempty(file)
                 return
@@ -572,7 +566,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 case optOverwrite
                     app.setTyreModel(model)
                     model = app.TyreModel;
-                    model.exportTyrePropertiesFile(file);
+                    model.saveTIR(file);
                 case optNew
                     app.setTyreModel(model)
                     model = app.TyreModel;
@@ -612,7 +606,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 end
             end
             
-            model = magicformula.v62.Model.empty();
+            model = MagicFormulaTyre.empty();
             app.setTyreModel(model)
         end
         function onViewMenuSelected(app, source, ~)
@@ -869,16 +863,11 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             app.SelectFitModesMenu = uimenu(app.FitterMenu, ...
                 'Text', 'Select Fit-Modes', ...
                 'Separator', 'on');
-            fitmodesText = {
-                char(magicformula.v62.FitMode.Fx0)
-                char(magicformula.v62.FitMode.Fy0)
-                char(magicformula.v62.FitMode.Fx)
-                char(magicformula.v62.FitMode.Fy)
-                };
-            fitmodesSelected = app.Settings.Fitter.FitModes;
+            fitmodesText = {'Fx0','Fy0','Mz0','Fx','Fy','Mx','My','Mz'};
+            fitmodesSelected = cellstr(app.Settings.Fitter.FitModes);
             for i = 1:numel(fitmodesText)
                 text = fitmodesText{i};
-                checked = any(strcmp(text, char(fitmodesSelected)));
+                checked = any(strcmpi(text, fitmodesSelected));
                 uimenu(app.SelectFitModesMenu, 'Text', text, ...
                     'Checked', checked, ...
                     'MenuSelectedFcn', @app.onSelectFitModesMenuSelected);
@@ -939,7 +928,17 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
     end
     methods (Access = private)
         function initSettings(app)
-            app.Settings = settings.AppSettings();
+            versionTool = app.About.Version;
+            versionSettings = settings.AppSettings.version();
+            versionsMatch = strcmpi(versionTool, versionSettings);
+            if versionsMatch
+                s = settings.AppSettings();
+            else
+                settings.AppSettings.clear()
+                s = settings.AppSettings();
+                s.Version = versionTool;
+            end
+            app.Settings = s;
         end
         function addlisteners(app)
             app.ViewLayoutSettingsChangedListener = listener(...
@@ -966,21 +965,21 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 switch selection
                     case optionLoad
                         try
-                            model = magicformula.v62.Model(lastTyreFile);
+                            model = MagicFormulaTyre(lastTyreFile);
                         catch
-                            model = magicformula.v62.Model.empty;
+                            model = MagicFormulaTyre.empty;
                             message = 'Failed to load last tyre model!';
                             uialert(fig, message, title, 'Icon', 'error')
                         end
                     case optionCancel
-                        model = magicformula.v62.Model.empty;
+                        model = MagicFormulaTyre.empty;
                 end
             else
-                model = magicformula.v62.Model.empty;
+                model = MagicFormulaTyre.empty;
             end
             app.setTyreModel(model)
             
-            fitter = magicformula.v62.Fitter();
+            fitter = magicformula.v61.Fitter();
             app.TyreModelFitter = fitter;
             app.TyreModelPanel.Fitter = fitter;
             
@@ -992,7 +991,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
         function setTyreModel(app, model, overwriteBackup)
             arguments
                 app
-                model magicformula.v62.Model
+                model MagicFormulaTyre
                 overwriteBackup logical = true
             end
             if app.TyreModel ~= model
@@ -1088,6 +1087,6 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             delete(app.TyreModelBackup)
             delete(app.TyreModelFitter)
             delete(app.UIFigure)
-        end
+    end
     end
 end

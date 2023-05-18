@@ -1,6 +1,6 @@
 classdef (ConstructOnLoad) FitterSettingsChangedEventData < event.EventData
    properties
-      Settings optim.options.Fmincon
+      Settings struct
    end
    methods
       function eventData = FitterSettingsChangedEventData(settings)

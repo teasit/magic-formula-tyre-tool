@@ -1,6 +1,6 @@
 classdef (ConstructOnLoad) ModelChangedEventData < event.EventData
    properties
-      Model magicformula.Model = magicformula.v62.Model.empty
+      Model MagicFormulaTyre = MagicFormulaTyre.empty
    end
    methods
       function eventData = ModelChangedEventData(model)

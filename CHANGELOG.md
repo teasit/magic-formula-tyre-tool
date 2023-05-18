@@ -1,4 +1,6 @@
 # Changelog
 
-- new: improved user feedback when fitting fails due to incomplete data.
-- fix: in R2022b, some persistent settings fail to save; added try/catch.
+- new: upgrade magicformula submodule to version v2.0.3
+- new: can now fit MX/MY/MZ!
+- new: downsampling-factor can be set to reduce data resolution and thereby
+  enables quicker fitting.

@@ -2,8 +2,8 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
     %TYREMODELPANEL UI for viewing and fitting tyre models.
     
     properties
-        Model magicformula.Model = magicformula.v62.Model.empty
-        Fitter magicformula.v62.Fitter = magicformula.v62.Fitter.empty
+        Model MagicFormulaTyre = MagicFormulaTyre.empty
+        Fitter magicformula.v61.Fitter = magicformula.v61.Fitter.empty
     end
     properties (Access = protected)
         Settings settings.AppSettings

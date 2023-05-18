@@ -1,6 +1,6 @@
 classdef (ConstructOnLoad) FittingModesChangedEventData < event.EventData
    properties
-      FitModes magicformula.v62.FitMode
+      FitModes magicformula.FitMode
    end
    methods
       function eventData = FittingModesChangedEventData(fitmodes)

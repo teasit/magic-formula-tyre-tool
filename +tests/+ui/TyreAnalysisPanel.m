@@ -18,7 +18,7 @@ classdef TyreAnalysisPanel < matlab.unittest.TestCase
     
     methods (TestClassTeardown)
         function deleteTestObject(testCase)
-%             delete(testCase.TestFigure)
+            delete(testCase.TestFigure)
         end
     end
     
@@ -26,11 +26,11 @@ classdef TyreAnalysisPanel < matlab.unittest.TestCase
         function testChangeTyreModel(testCase)
             file = fullfile('doc','examples','fsae-ttc-data',...
                 'fsaettc_obfuscated.tir');
-            model = magicformula.v62.Model(file);
+            model = MagicFormulaTyre(file);
             p = testCase.TestObject;
             e = events.ModelChangedEventData(model);
             notify(p, 'TyreModelChanged', e)
-%             pause(5)
+            pause(5)
         end
     end
 end

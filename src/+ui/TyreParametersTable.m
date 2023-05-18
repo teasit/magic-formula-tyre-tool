@@ -1,8 +1,8 @@
 classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
     
     properties (Access = public)
-        Model magicformula.v62.Model
-        FittedParameters magicformula.v62.Parameters = magicformula.v62.Parameters.empty
+        Model MagicFormulaTyre
+        FittedParameters magicformula.v61.Parameters = magicformula.v61.Parameters.empty
     end
     
     properties (Access = private, Constant)
@@ -243,7 +243,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
             params = model.Parameters;
             paramNames = fieldnames(params);
             numParams = numel(paramNames);
-            type = 'magicformula.v62.ParameterFittable';
+            type = 'magicformula.ParameterFittable';
             isFittable = false(numParams, 1);
             for i = 1:numParams
                 paramName = paramNames{i};
@@ -301,7 +301,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                 for i = 1:numel(paramNames)
                     name = paramNames{i};
                     param = paramsFitted.(name);
-                    if ~isa(param, 'magicformula.v62.ParameterFittable')
+                    if ~isa(param, 'magicformula.ParameterFittable')
                         continue
                     end
                     row = find(strcmp(paramNamesTbl, name));
@@ -313,11 +313,12 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
             I_remove = false(numParams, 1);
             if s.View.TyreParametersTable.ShowOnlyFitModeParameters
                 fitmodes = s.Fitter.FitModes;
+                getFitParamNames = @magicformula.v61.Fitter.getFitParamNames;
                 paramNamesFitModes = {};
                 for i = 1:numel(fitmodes)
                     fitmode = fitmodes(i);
                     paramNamesFitModes = [paramNamesFitModes
-                        magicformula.v62.getFitParamNames(fitmode)];
+                        getFitParamNames(fitmode)];
                 end
                 isForFitmodes = contains(paramNames, paramNamesFitModes);
                 I_remove = I_remove | ~isForFitmodes;

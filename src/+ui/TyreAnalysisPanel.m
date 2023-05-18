@@ -3,7 +3,7 @@ classdef TyreAnalysisPanel < matlab.ui.componentcontainer.ComponentContainer
     
     properties
         Measurements tydex.Measurement = tydex.Measurement.empty
-        Model magicformula.Model = magicformula.v62.Model.empty
+        Model MagicFormulaTyre = MagicFormulaTyre.empty
     end
     properties (Access = ?matlab.unittest.TestCase, Transient, NonCopyable)
         Grid                        matlab.ui.container.GridLayout

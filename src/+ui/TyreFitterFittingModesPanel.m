@@ -2,7 +2,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
     %FitterFITTINGMODESPANEL Panel to configure fitting modes for fitter.
     
     properties (SetAccess = protected)
-        FitModes magicformula.v62.FitMode
+        FitModes magicformula.FitMode
     end
     
     properties (Access = private)
@@ -22,7 +22,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
     
     methods (Access = private)
         function onCheckboxValueChanged(obj, origin, event)
-            [fitmodes, fitmodesText] = enumeration('magicformula.v62.FitMode');
+            [fitmodes, fitmodesText] = enumeration('magicformula.FitMode');
             checkboxText = origin.Text;
             I = strcmp(fitmodesText, checkboxText);
             fitmode = fitmodes(I);
@@ -63,13 +63,13 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
                 'Padding', 5*ones(1,4));
         end
         function setupCheckboxes(obj)
-            import magicformula.v62.FitMode
-            [~, fitmodes] = enumeration('magicformula.v62.FitMode');
+            import magicformula.FitMode
+            [~, fitmodes] = enumeration('magicformula.FitMode');
             for i = 1:numel(fitmodes)
                 cb = uicheckbox(obj.Grid, ...
                     'Text', fitmodes{i}, ...
                     'ValueChangedFcn', @obj.onCheckboxValueChanged);
-                if any(strcmp(fitmodes{i}, {'Fz', 'Mz', 'Mz0', 'Mx', 'My'}))
+                if any(strcmp(fitmodes{i}, 'Fz'))
                     % todo: enable these fitmodes after they are
                     % implemented in the Fitter class.
                     cb.Enable = false;
@@ -90,7 +90,7 @@ classdef TyreFitterFittingModesPanel < matlab.ui.componentcontainer.ComponentCon
         function updateCheckboxes(obj)
             checkboxes = obj.Checkboxes;
             set(checkboxes, 'Value', false)
-            fitmodes = enumeration('magicformula.v62.FitMode');
+            fitmodes = enumeration('magicformula.FitMode');
             fitmodesSelected = obj.Settings.Fitter.FitModes;
             for i = 1:numel(fitmodesSelected)
                 fitmode = fitmodesSelected(i);

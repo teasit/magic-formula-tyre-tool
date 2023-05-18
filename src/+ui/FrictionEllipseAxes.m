@@ -2,7 +2,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
     %FRICTIONELLIPSEAXES Axes to plot friction ellipse for tyre model.
     
     properties
-        Model magicformula.Model = magicformula.v62.Model.empty
+        Model MagicFormulaTyre = MagicFormulaTyre.empty
         Settings settings.AppSettings
     end
     properties (Access = private, Transient, NonCopyable)
@@ -90,6 +90,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             FZ = s.FZW;
             IA = s.INCLANGL;
             TS = s.TYRESIDE;
+            VX = model.Parameters.LONGVL.Value;
             
             colors = get(ax, 'colororder');
             
@@ -97,7 +98,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             for i = 1:n_SA
                 SA = SA_const(i);
                 SX = SX_sweep;
-                [FX,FY] = model.eval(SA,SX,IA,P,FZ,TS);                
+                [FX,FY] = magicformula(model,SX,SA,FZ,P,IA,VX,TS);                
                 h(i) = plot(ax, FY, FX, 'k-', 'LineWidth', lineWidth, ...
                     'Marker', marker, 'MarkerSize', markerSize, ...
                     'Color', colors(1,:));
@@ -114,7 +115,7 @@ classdef FrictionEllipseAxes < matlab.ui.componentcontainer.ComponentContainer
             for j = 1:n_SX
                 SA = SA_sweep;
                 SX = SX_const(j);
-                [FX,FY] = model.eval(SA,SX,IA,P,FZ,TS);
+                [FX,FY] = magicformula(model,SX,SA,FZ,P,IA,VX,TS);     
                 h(j) = plot(ax, FY, FX, 'k-', 'LineWidth', lineWidth, ...
                     'Marker', marker, 'MarkerSize', markerSize, ...
                     'Color', colors(2,:));

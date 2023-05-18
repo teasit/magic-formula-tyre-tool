@@ -2,7 +2,7 @@ classdef TyrePlotFrictionEllipsePanel < matlab.ui.componentcontainer.ComponentCo
     %TYREPLOTFRICTIONELLIPSEPANEL Plots friction ellipse of tyre model.
     
     properties
-        Model magicformula.v62.Model = magicformula.v62.Model.empty
+        Model MagicFormulaTyre = MagicFormulaTyre.empty
     end
     properties (Access = private, Transient, NonCopyable)
         MainGrid                    matlab.ui.container.GridLayout
