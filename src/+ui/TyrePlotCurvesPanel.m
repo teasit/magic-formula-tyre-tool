@@ -6,6 +6,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
         Measurements tydex.Measurement = tydex.Measurement.empty
     end
     properties (Access = private)
+        MeasurementsPlottable tydex.Measurement = tydex.Measurement.empty
         SteadyStateNamesAll = {
             'LONGSLIP'
             'SLIPANGL'
@@ -33,19 +34,12 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
         SteadyStateSettingsPanel    matlab.ui.container.Panel
         
         PlotSettingsPanelGrid       matlab.ui.container.GridLayout
-        AutoRefreshStateButtonLabel matlab.ui.control.Label
         AutoRefreshStateButton      matlab.ui.control.StateButton
-        HoldOnSettingLabel          matlab.ui.control.Label
         HoldOnSettingStateButton    matlab.ui.control.StateButton
-        DataShowSettingLabel        matlab.ui.control.Label
         DataShowSettingStateButton  matlab.ui.control.StateButton
-        ModelShowSettingLabel       matlab.ui.control.Label
         ModelShowSettingStateButton matlab.ui.control.StateButton
-        ShowLegendStateButtonLabel  matlab.ui.control.Label
         ShowLegendStateButton       matlab.ui.control.StateButton
-        XAxisSettingLabel           matlab.ui.control.Label
         XAxisSettingDropDown        matlab.ui.control.DropDown
-        YAxisSettingLabel           matlab.ui.control.Label
         YAxisSettingDropDown        matlab.ui.control.DropDown
         XAxisRangeSelector          ui.NumericRangeSelector
         
@@ -100,10 +94,10 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                     end
                     return
             end
+            updateDropDowns(obj)
             [names, values] = getSteadyStateUserSelection(obj);
             s.SteadyStateNamesSelected = names;
             s.SteadyStateValuesSelected = values;
-            updateDropDowns(obj)
             updatePlot(obj)
         end
     end
@@ -176,6 +170,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             % the loaded measurements. For example that in the testing data
             % three inclination angles were tested: 0, 2 and 4 degrees.
             s = obj.Settings.View.TyreAnalysisPanel.TyrePlotCurvesPanel;
+
             measurements = obj.Measurements;
             if isempty(measurements)
                 mc = ?settings.TyrePlotCurvesPanelViewSettings;
@@ -183,13 +178,25 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                 prop = findobj(mp, 'Name', 'SteadyStateValues');
                 steadyStateValues = prop.DefaultValue;
             end
+
+            xAxis = obj.XAxisSettingDropDown.Value;
+            yAxis = obj.YAxisSettingDropDown.Value;
+
+            isPlottable = false(numel(measurements),1);
+            for i = 1:numel(measurements)
+                measurement = measurements(i);
+                constantNames = {measurement.Constant.Name};
+                isPlottable(i) = ~any(contains(constantNames, xAxis));
+            end
+            measurementsPlottable = measurements(isPlottable);
+            obj.MeasurementsPlottable = measurementsPlottable;
             
             steadyStateNamesAll = obj.SteadyStateNamesAll;
             steadyStateValues = cell(1, numel(steadyStateNamesAll));
             steadyStateValues(:) = {{}};
             
-            for i = 1:numel(measurements)
-                measurement = measurements(i);
+            for i = 1:numel(measurementsPlottable)
+                measurement = measurementsPlottable(i);
                 
                 constantNames = {measurement.Constant.Name};
                 constantValues = [measurement.Constant.Value];
@@ -299,7 +306,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             end
             
             model = obj.Model;
-            measurements = obj.Measurements;
+            measurements = obj.MeasurementsPlottable;
             
             showModel = obj.ModelShowSettingStateButton.Value;
             showData = obj.DataShowSettingStateButton.Value;
@@ -445,12 +452,7 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
                         return
                 end
 
-                if isempty(yVal)
-                    fig = ancestor(obj, 'figure');
-                    message = sprintf('No data for channel ''%s''!', yVar);
-                    title = 'Tyre Analysis';
-                    uialert(fig, message, title)
-                else
+                if ~isempty(yVal)
                     hData = plot(ax, xVal, yVal, ...
                     'Marker', '.', ...
                     'LineStyle', 'none');
@@ -609,91 +611,94 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
     end
     methods(Access = protected)
         function setupMainGrid(obj)
+            s = obj.Settings.Layout;
+            w = s.DefaultSidebarWidth;
             obj.MainGrid = uigridlayout(obj, ...
                 'RowHeight', {'1x'}, ...
-                'ColumnWidth', {'1x', 'fit'}, ...
-                'ColumnSpacing', 10, ...
+                'ColumnWidth', {'1x', w}, ...
+                'ColumnSpacing', s.DefaultColumnSpacing, ...
                 'Padding', 0*ones(1,4), ...
                 'Scrollable', false);
         end
         function setupPlotSettingsPanel(obj)
-            s = obj.Settings.View.TyreAnalysisPanel.TyrePlotCurvesPanel;
-            
+            s = obj.Settings.Layout;
+            w = s.DefaultButtonWidthTextIcon;
             grid = uigridlayout(obj.PlotSettingsPanel, ...
                 'RowHeight', repmat({'fit'}, 9, 1), ...
-                'ColumnWidth', {'fit', 'fit'}, ...
-                'ColumnSpacing', 10, ...
-                'Padding', 10*ones(1,4), ...
+                'ColumnWidth', {w, 'fit'}, ...
+                'ColumnSpacing', s.DefaultColumnSpacing, ...
+                'Padding', s.DefaultPadding, ...
                 'Scrollable', false);
-            obj.PlotSettingsPanelGrid = grid;
             
-            obj.AutoRefreshStateButtonLabel = uilabel(grid, ...
-                'Text', 'Refresh');
+            s = obj.Settings.View.TyreAnalysisPanel.TyrePlotCurvesPanel;
+            obj.PlotSettingsPanelGrid = grid;
+
             obj.AutoRefreshStateButton = uibutton(grid, 'state', ...
                 'Text', 'Auto', ...
                 'Value', s.AutoRefresh, ...
                 'Tag', 'AutoRefresh', ...
                 'Tooltip', 'Plot will update on new model changes.', ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
-            
-            obj.ShowLegendStateButtonLabel = uilabel(grid, 'Text', 'Legend');
+            uilabel(grid, 'Text', 'Auto-Refresh');
+
             obj.ShowLegendStateButton = uibutton(grid, 'state', ...
                 'Text', 'On', ...
                 'Value', s.LegendOn, ...
                 'Tag', 'LegendOn', ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
+            uilabel(grid, 'Text', 'Show Legend');
             
-            obj.HoldOnSettingLabel = uilabel(grid, 'Text', 'Hold');
             obj.HoldOnSettingStateButton = uibutton(grid, 'state', ...
                 'Value', s.HoldOn, ...
                 'Text', 'On', ...
                 'ValueChangedFcn', @obj.onSettingsChanged, ...
                 'Tag', 'HoldOn');
+            uilabel(grid, 'Text', 'Hold');
             
-            obj.DataShowSettingLabel = uilabel(grid, 'Text', 'Data');
             obj.DataShowSettingStateButton = uibutton(grid, 'state', ...
                 'Text', 'Show', ...
                 'Value', s.DataShow, ...
                 'ValueChangedFcn', @obj.onSettingsChanged, ...
                 'Tag', 'DataShow');
-            
-            obj.ModelShowSettingLabel = uilabel(grid, 'Text', 'Model');
+            uilabel(grid, 'Text', 'Measurement Data');
+
             obj.ModelShowSettingStateButton = uibutton(grid, 'state', ...
                 'Value', s.ModelShow, ...
                 'Text', 'Show', ...
                 'ValueChangedFcn', @obj.onSettingsChanged, ...
                 'Tag', 'ModelShow');
+            uilabel(grid, 'Text', 'Tire Model');
             
-            obj.XAxisSettingLabel = uilabel(grid, ...
-                'Text', 'X-Axis', ...
-                'Tag', 'XAxis');
             obj.XAxisSettingDropDown = uidropdown(grid, ...
                 'Items', obj.SteadyStateNamesAll, ...
                 'Value', s.XAxis, ...
                 'Tag', 'XAxis', ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
+            uilabel(grid, ...
+                'Text', 'X-Axis', ...
+                'Tag', 'XAxis');
             
-            obj.YAxisSettingLabel = uilabel(grid, ...
-                'Text', 'Y-Axis');
             obj.YAxisSettingDropDown = uidropdown(grid, ...
                 'Items', {'FX','FYW','MXW','MYW','MZW'}, ...
                 'Tag', 'YAxis', ...
                 'ValueChangedFcn', @obj.onSettingsChanged);
-            
-            uilabel(grid, 'Text', 'X-Range');
+            uilabel(grid, ...
+                'Text', 'Y-Axis');
+
             selector = ui.NumericRangeSelector(grid, ...
                 'RangeChangedFcn', @obj.onXAxisRangeChanged);
-            uilabel(grid, 'Text', char.empty);  % to keep grid flow
+            uilabel(grid, 'Text', 'X-Range');
             selector.Layout.Row = [0 1] + selector.Layout.Row;
             obj.XAxisRangeSelector = selector;
         end
         function setupSteadyStateSettingsPanel(obj)
-            s = obj.Settings.View.TyreAnalysisPanel.TyrePlotCurvesPanel;
+            s = obj.Settings.Layout;
+            w = s.DefaultButtonWidthTextIcon;
             grid = uigridlayout(obj.SteadyStateSettingsPanel, ...
                 'RowHeight', repmat({'fit'}, 1, 6), ...
-                'ColumnWidth', {'fit', 'fit', 'fit'}, ...
-                'ColumnSpacing', 10, ...
-                'Padding', 10*ones(1,4), ...
+                'ColumnWidth', {'fit', w, 'fit'}, ...
+                'ColumnSpacing', s.DefaultColumnSpacing, ...
+                'Padding', s.DefaultPadding, ...
                 'Scrollable', false);
             
             names = obj.SteadyStateNamesAll;
@@ -715,8 +720,8 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             obj.SteadyStateSettingsPanelGrid = grid;
         end
         function setupSidePanel(obj)
+            s = obj.Settings;
             obj.SidePanel = uipanel(obj.MainGrid);
-            obj.SidePanel.Layout.Column = 2;
             
             obj.SidePanelGrid = uigridlayout(obj.SidePanel, ...
                 'RowHeight', repmat({'fit'}, 1, 2), ...
@@ -727,10 +732,14 @@ classdef TyrePlotCurvesPanel < matlab.ui.componentcontainer.ComponentContainer
             
             obj.PlotSettingsPanel = uipanel(obj.SidePanelGrid, ...
                 'Title', 'Plot Settings', ...
+                'FontWeight', s.Text.FontWeightPanel, ...
+                'FontName', s.Text.FontNamePanel, ...
                 'BorderType', 'none');
             
             obj.SteadyStateSettingsPanel = uipanel(obj.SidePanelGrid, ...
                 'Title', 'Steady-State Settings', ...
+                'FontWeight', s.Text.FontWeightPanel, ...
+                'FontName', s.Text.FontNamePanel, ...
                 'BorderType', 'none');
         end
         function setupAxes(obj)

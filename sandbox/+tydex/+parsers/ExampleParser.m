@@ -1,4 +1,4 @@
-classdef ExampleParser < tydex.Parser
+classdef (Hidden) ExampleParser < tydex.Parser
     methods (Access = protected)
         [measurements, bins, binvalues] = parse(obj,file)
     end

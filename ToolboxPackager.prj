@@ -7,7 +7,7 @@
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
     <param.description>https://github.com/teasit/magic-formula-tyre-tool</param.description>
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.4.0</param.version>
+    <param.version>1.5.0</param.version>
     <param.output>${PROJECT_ROOT}\MagicFormulaTyreTool.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -63,7 +63,7 @@ MagicFormulaTyreTool_resources</param.exclude.filters>
     <param.matlab.project.id />
     <param.matlab.project.name />
     <param.release.start>R2021a</param.release.start>
-    <param.release.end>R2022b</param.release.end>
+    <param.release.end>latest</param.release.end>
     <param.release.current.only>false</param.release.current.only>
     <param.compatiblity.windows>true</param.compatiblity.windows>
     <param.compatiblity.macos>true</param.compatiblity.macos>
@@ -125,7 +125,7 @@ MagicFormulaTyreTool_resources</param.exclude.filters>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2022b</root>
+      <root>C:\Program Files\MATLAB\R2023b</root>
       <toolboxes />
     </matlab>
     <platform>

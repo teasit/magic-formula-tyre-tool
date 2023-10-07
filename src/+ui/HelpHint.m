@@ -3,10 +3,9 @@ classdef HelpHint < matlab.ui.componentcontainer.ComponentContainer
     %callback. Can be used to open HTML file in browser for example.
     
     properties
-        Icon char = 'circle-question-regular.svg'
+        Icon char = 'circle-info-solid.svg'
         Tooltip char = 'Add Tooltip here'
         ClickedFcn function_handle = function_handle.empty
-        Height cell = {22}
     end
     
     properties (Access = private)
@@ -17,9 +16,11 @@ classdef HelpHint < matlab.ui.componentcontainer.ComponentContainer
     end
     methods (Access = protected)
         function setup(obj)
+            s = settings.LayoutSettings();
+            h = s.DefaultButtonHeight;
             grid = uigridlayout(obj, ...
-                'RowHeight', obj.Height, ...
-                'ColumnWidth', obj.Height, ...
+                'RowHeight', h, ...
+                'ColumnWidth', h, ...
                 'ColumnSpacing', 0, ...
                 'Padding', zeros(1,4));
             

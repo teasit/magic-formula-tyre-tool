@@ -41,9 +41,9 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
         TyreModelPanel          ui.TyreModelPanel
         TyreModelGrid           matlab.ui.container.GridLayout
         
-        TyreMeasurementsTab     matlab.ui.container.Tab
-        TyreMeasurementsTabGrid matlab.ui.container.GridLayout
-        TyreMeasurementsPanel   ui.TyreMeasurementsPanel
+        TyreDataTab             matlab.ui.container.Tab
+        TyreDataTabGrid         matlab.ui.container.GridLayout
+        TyreDataPanel           ui.TyreDataPanel
         
         TyreModelAnalysisTab    matlab.ui.container.Tab
         TyreModelAnalysisGrid   matlab.ui.container.GridLayout
@@ -250,31 +250,45 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             modelEmpty = MagicFormulaTyre.empty;
             app.setTyreModel(modelEmpty)
         end
-        function onImportMeasurementsRequested(app, ~, ~)
+        function onImportMeasurementsRequested(app, ~, event)
             fig = app.UIFigure;
-            
-            importer = ui.MeasurementImporter(fig);
+            title = 'Measurement Import';
+            msg = 'Importing measurements...'; %TODO: not indeterminate
+            dlg = uiprogressdlg(fig, ...
+                'Title', title,...
+                'Message', msg, ...
+                'Indeterminate','on', ...
+                'Cancelable', 'off');
             try
-                uiwait(fig);
-                measurements = importer.MeasurementImported;
-                delete(importer)
-                if isempty(measurements)
-                    uiresume(fig)
+                measurements = app.TyreMeasurements;
+                files = event.Files;
+                if isempty(files)
                     return
                 end
-                measurements = [app.TyreMeasurements measurements];
+                parser = event.Parser();
+                for i = 1:numel(files)
+                    file = files{i};
+                    measurement = parser.run(file);
+                    measurements = [measurements measurement];
+                end
                 app.setTyreMeasurementData(measurements)
-                
                 model = app.TyreModel;
                 if ~isempty(model)
                     nominalParams = app.extractNominalParametersFromMeasurements();
                     app.dialogApplyParamsFromMeasurements(nominalParams)
                 end
-            catch ME
-                delete(importer)
-                uiresume(fig)
-                rethrow(ME)
+            catch cause
+                close(dlg)
+                msg = 'Import failed. See console/logfile for details';
+                uialert(fig, msg, title, 'Icon', 'error')
+
+                exception = exceptions.CouldNotExportTYDEX();
+                exception = exception.addCause(cause);
+                throw(exception)
             end
+            notify(app.TyreDataPanel, 'MeasurementDataImportFinished')
+            msg = 'Import successful.';
+            uialert(fig, msg, title, 'Icon', 'success')
         end
         function onExportMeasurementsRequested(app, ~, ~)
             measurements = app.TyreMeasurements;
@@ -398,7 +412,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 event events.FitterMeasurementsLoadedEventData
             end
             flagsMap = event.FitModeFlags;
-            app.TyreMeasurementsPanel.addMeasurementFitModes(flagsMap);
+            app.TyreDataPanel.addMeasurementFitModes(flagsMap);
         end
         function onStartFittingRequested(app, ~, ~)
             import magicformula.FitMode
@@ -441,6 +455,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 'Title', title, ...
                 'Message', msg, ...
                 'Indeterminate','on', ...
+                'CancelText', 'Stop', ...
                 'Cancelable', 'on');
             
             outputFcn = @(x,optimValues,state) ...
@@ -727,7 +742,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             createGrid(app)
             createTabGroups(app)
             createTyreModelTab(app)
-            createTyreMeasurementsTab(app)
+            createTyreDataTab(app)
             createTyreAnalysisTab(app)
             createMenus(app)
             set(app.UIFigure, 'Visible', 'on');
@@ -786,17 +801,17 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 'FitterStartRequestedFcn', @app.onStartFittingRequested, ...
                 'TyreModelEditedFcn', @app.onTyreModelEdited);
         end
-        function createTyreMeasurementsTab(app)
-            app.TyreMeasurementsTab = uitab(...
+        function createTyreDataTab(app)
+            app.TyreDataTab = uitab(...
                 app.TabGroupPrimary, ...
                 'Title', 'Tyre Data');
-            app.TyreMeasurementsTabGrid = uigridlayout(...
-                app.TyreMeasurementsTab, ...
+            app.TyreDataTabGrid = uigridlayout(...
+                app.TyreDataTab, ...
                 'Padding', 10*ones(1,4), ...
                 'RowHeight', {'1x'}, ...
                 'ColumnWidth', {'1x'});
-            app.TyreMeasurementsPanel = ui.TyreMeasurementsPanel(...
-                app.TyreMeasurementsTabGrid, ...
+            app.TyreDataPanel = ui.TyreDataPanel(...
+                app.TyreDataTabGrid, ...
                 'MeasurementDataImportRequestedFcn', ...
                 @app.onImportMeasurementsRequested, ...
                 'MeasurementDataClearRequestedFcn', ...
@@ -949,8 +964,8 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
                 @app.onFitterSettingsChanged);
         end
         function startupFcn(app)
-            appSettings = app.Settings;
-            lastTyreFile = appSettings.LastSession.TyreModelFile;
+            s = app.Settings;
+            lastTyreFile = s.LastSession.TyreModelFile;
             if ~isempty(lastTyreFile)
                 fig = app.UIFigure;
                 title = 'Load Last Tyre Model';
@@ -980,6 +995,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             app.setTyreModel(model)
             
             fitter = magicformula.v61.Fitter();
+            fitter.Options = s.Fitter.OptimizerSettings;
             app.TyreModelFitter = fitter;
             app.TyreModelPanel.Fitter = fitter;
             
@@ -1022,7 +1038,7 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             app.TyreMeasurementsSelectionIndices = logical.empty;
             
             e = events.TyreMeasurementsChanged(measurements, flags);
-            notify(app.TyreMeasurementsPanel, 'MeasurementDataChanged', e);
+            notify(app.TyreDataPanel, 'MeasurementDataChanged', e);
             notify(app.TyreAnalysisPanel, 'TyreDataChanged', e);
         end
     end

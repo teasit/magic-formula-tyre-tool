@@ -24,8 +24,7 @@ classdef FrictionEllipseAxes < matlab.unittest.TestCase
     
     methods (Test)
         function testChangeTyreModel(testCase)
-            file = fullfile('doc','examples','fsae-ttc-data',...
-                'fsaettc_obfuscated.tir');
+            file = 'doc/examples/fsae/fsaettc_obfuscated.tir';
             model = MagicFormulaTyre(file);
             ax = testCase.TestObject;
             ax.Model = model;

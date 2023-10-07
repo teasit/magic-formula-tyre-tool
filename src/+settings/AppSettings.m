@@ -1,7 +1,9 @@
 classdef AppSettings < settings.AbstractSettings
     %APPSETTINGS Loads app settings from and saves them to persistent storage.
     properties (SetObservable, AbortSet)
+        Layout settings.LayoutSettings
         Fitter settings.FitterSettings
+        Text   settings.TextSettings
         View settings.ViewSettings
         LastSession settings.LastSessionSettings
         Version char
@@ -32,9 +34,15 @@ classdef AppSettings < settings.AbstractSettings
             end
         end
         function init(obj)
-            obj.Fitter = settings.FitterSettings();
-            obj.View = settings.ViewSettings();
-            obj.LastSession = settings.LastSessionSettings();
+            props = metaclass(obj).PropertyList;
+            isSetObservable = [props.SetObservable];
+            props(~isSetObservable) = [];
+            for i = 1:numel(props)
+                p = props(i);
+                name = p.Name;
+                class = str2func(p.Validation.Class.Name);
+                obj.(name) = class();
+            end
             try
                 s = settings();
                 if hasGroup(s, obj.SettingsGroupTopLevel)

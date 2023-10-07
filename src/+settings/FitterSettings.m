@@ -2,7 +2,7 @@ classdef FitterSettings < settings.AbstractSettings
     %FITTERSETTINGS Contains app settings for fitter
     properties (SetObservable, AbortSet)
         FitModes magicformula.FitMode = magicformula.FitMode.empty
-        DownsampleFactor double = double.empty
+        DownsampleFactor double = 1
         OptimizerSettings struct = struct.empty
     end
     methods

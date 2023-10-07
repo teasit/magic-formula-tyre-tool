@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1198488352" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2279359127" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
     <param.appname>MagicFormulaTyreTool</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
@@ -13,7 +13,7 @@
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
     <param.description>https://github.com/teasit/magic-formula-tyre-tool</param.description>
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.4.0</param.version>
+    <param.version>1.5.0</param.version>
     <param.products.name>
       <item>MATLAB</item>
       <item>Optimization Toolbox</item>
@@ -25,9 +25,9 @@
       <item>8</item>
     </param.products.id>
     <param.products.version>
-      <item>9.13</item>
-      <item>9.4</item>
-      <item>9.1</item>
+      <item>23.2</item>
+      <item>23.2</item>
+      <item>23.2</item>
     </param.products.version>
     <param.platforms />
     <param.output>${PROJECT_ROOT}</param.output>
@@ -46,6 +46,7 @@
       <file>${PROJECT_ROOT}\src\+events\FitterMeasurementsLoadedEventData.m</file>
       <file>${PROJECT_ROOT}\src\+events\FitterSettingsChangedEventData.m</file>
       <file>${PROJECT_ROOT}\src\+events\FittingModesChangedEventData.m</file>
+      <file>${PROJECT_ROOT}\src\+events\MeasurementImportRequested.m</file>
       <file>${PROJECT_ROOT}\src\+events\MeasurementSelectionChanged.m</file>
       <file>${PROJECT_ROOT}\src\+events\ModelChangedEventData.m</file>
       <file>${PROJECT_ROOT}\src\+events\PlotTyreMeasurementsRequested.m</file>
@@ -64,10 +65,13 @@
       <file>${PROJECT_ROOT}\src\+exceptions\InvalidSolverOptions.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\checkUpdateAvailable.m</file>
       <file>${PROJECT_ROOT}\src\+helpers\fitterOutputFcn.m</file>
+      <file>${PROJECT_ROOT}\src\+helpers\getParsers.m</file>
       <file>${PROJECT_ROOT}\src\+settings\AbstractSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\AppSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\FitterSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\LastSessionSettings.m</file>
+      <file>${PROJECT_ROOT}\src\+settings\LayoutSettings.m</file>
+      <file>${PROJECT_ROOT}\src\+settings\TextSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\TyreAnalysisPanelViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\TyreModelPanelViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\TyreParametersTableViewSettings.m</file>
@@ -76,16 +80,15 @@
       <file>${PROJECT_ROOT}\src\+settings\ViewLayoutSettings.m</file>
       <file>${PROJECT_ROOT}\src\+settings\ViewSettings.m</file>
       <file>${PROJECT_ROOT}\src\+ui\FrictionEllipseAxes.m</file>
-      <file>${PROJECT_ROOT}\src\+ui\HelpHint.m</file>
-      <file>${PROJECT_ROOT}\src\+ui\MeasurementImporter.m</file>
       <file>${PROJECT_ROOT}\src\+ui\NumericRangeSelector.m</file>
       <file>${PROJECT_ROOT}\src\+ui\SearchBar.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreAnalysisPanel.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\TyreDataImportPanel.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\TyreDataPanel.m</file>
+      <file>${PROJECT_ROOT}\src\+ui\TyreDataTable.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreFitterFittingModesPanel.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreFitterPanel.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreFitterSolverSettingsPanel.m</file>
-      <file>${PROJECT_ROOT}\src\+ui\TyreMeasurementsPanel.m</file>
-      <file>${PROJECT_ROOT}\src\+ui\TyreMeasurementsTable.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreModelPanel.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyreParametersTable.m</file>
       <file>${PROJECT_ROOT}\src\+ui\TyrePlotCurvesPanel.m</file>
@@ -144,7 +147,7 @@
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2022b</root>
+      <root>C:\Program Files\MATLAB\R2023b</root>
       <toolboxes />
     </matlab>
     <platform>

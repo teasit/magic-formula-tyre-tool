@@ -39,9 +39,10 @@ de-identified and obscured data for demonstration purposes.
 
 ## Requirements
 
-- MATLAB Base (tested with R2021a)
+- MATLAB Base
 - Optimization Toolbox (for fitting)
 - Signal Processing Toolbox (for raw measurement import)
+- Parallel Computing Toolbox (if `parfor` is to be used while fitting)
 
 ## Installation
 
@@ -49,7 +50,7 @@ There are several ways:
 
 - Download latest Release from [MATLAB File Exchange](https://de.mathworks.com/matlabcentral/fileexchange/111375)
 - Download latest Release from [GitHub](https://github.com/teasit/magic-formula-tyre-tool/releases)
-- Clone using Git and integrate into your projects using a [Project Reference](https://de.mathworks.com/help/simulink/ug/add-or-remove-a-reference-to-another-project.html)
+- Clone using Git and integrate into your projects using a [Project Reference](https://mathworks.com/help/simulink/ug/add-or-remove-a-reference-to-another-project.html)
 
 ## Usage
 
@@ -133,6 +134,5 @@ comparison.
 
 ## Known Issues
 
-- Currently only Fitting of Fx0, Fy0, Fx, Fy is supported
 - Only Magic Formula version 6.1.2 (62) is supported.
 - The FSAE TTC parsers might not always work. You might have to create your own parser.
