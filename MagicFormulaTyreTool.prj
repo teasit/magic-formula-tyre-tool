@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2279359127" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="782106963" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="MagicFormulaTyreTool" target="target.mlapps" target-name="Package App">
     <param.appname>MagicFormulaTyreTool</param.appname>
     <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
     <param.email>teasdale@lightsaber.red</param.email>
