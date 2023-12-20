@@ -1,13 +1,13 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="4228771701" file="C:\Users\Tom\Documents\magic-formula-tyre-tool\ToolboxPackager.prj" location="C:\Users\Tom\Documents\magic-formula-tyre-tool" name="ToolboxPackager" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="4228771701" file="C:\workspace\magic-formula-tyre-tool\ToolboxPackager.prj" location="C:\workspace\magic-formula-tyre-tool" name="ToolboxPackager" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>MagicFormulaTyreTool</param.appname>
-    <param.authnamewatermark>Tom Teasdale</param.authnamewatermark>
-    <param.email>teasdale@lightsaber.red</param.email>
+    <param.authnamewatermark />
+    <param.email />
     <param.company />
     <param.summary>MATLAB GUI for Magic Formula Tyre Modeling</param.summary>
     <param.description>https://github.com/teasit/magic-formula-tyre-tool</param.description>
     <param.screenshot>${PROJECT_ROOT}\assets\img\App_Screenshot_Main.jpg</param.screenshot>
-    <param.version>1.5.0</param.version>
+    <param.version>1.5.1</param.version>
     <param.output>${PROJECT_ROOT}\MagicFormulaTyreTool.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -121,7 +121,7 @@ MagicFormulaTyreTool_resources</param.exclude.filters>
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}" name="MagicFormulaTyreTool.mltbx" optional="false">C:\Users\Tom\Documents\magic-formula-tyre-tool\MagicFormulaTyreTool.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="MagicFormulaTyreTool.mltbx" optional="false">C:\workspace\magic-formula-tyre-tool\MagicFormulaTyreTool.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
