@@ -634,28 +634,38 @@ classdef (Sealed) MagicFormulaTyreTool < matlab.apps.AppBase
             viewSettings.(tagParent).(tag) = valueNew;
             set(source, 'Checked', valueNew);
         end
-        function onApplyFittedTyreModelRequested(app, ~, ~)
+        function onApplyFittedTyreModelRequested(app, ~, event)
+            tyreModel = app.TyreModel;
             tyreModelFitted = app.TyreModelFitted;
             if isempty(tyreModelFitted)
                 return
             end
            
             fig = app.UIFigure;
-            msg = ['Do you want to apply the parameter values found by ' ...
-                'the fitter? Unsaved changes of your model will be ' ...
-                'overwritten.'];
-            optApply = 'Apply';
-            optCancel = 'No';
+            msg = ['Do you want to apply the fitted parameter values? ' ...
+                'Unsaved changes will be overwritten.'];
+            optApplySelected = 'Apply Selected';
+            optApplyAll = 'Apply All';
+            optCancel = 'Cancel';
             userSelection = uiconfirm(fig, msg, ...
                 'Parameters detected in measurements', ...
-                'Options', {optApply, optCancel}, ...
-                'DefaultOption', optApply, ...
+                'Options', {optApplyAll, optApplySelected, optCancel}, ...
+                'DefaultOption', optApplyAll, ...
                 'CancelOption', optCancel);
-            if strcmp(userSelection, optCancel)
-                return
+            switch userSelection
+                case optApplyAll
+                    app.setTyreModel(tyreModelFitted, false)
+                case optApplySelected
+                    names = event.ParameterNames;
+                    for i = 1:numel(names)
+                        name = names{i};
+                        tyreModel.Parameters.(name).Value = ...
+                            tyreModelFitted.Parameters.(name).Value;
+                    end
+                    app.setTyreModel(tyreModel, false)
+                case optCancel
+                    return
             end
-            
-            app.setTyreModel(tyreModelFitted, false)
         end
         function onTyreModelStructToMatRequested(app, ~, ~)
             filter = '.mat';

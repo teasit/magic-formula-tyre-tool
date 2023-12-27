@@ -104,7 +104,9 @@ classdef TyreModelPanel < matlab.ui.componentcontainer.ComponentContainer
             notify(obj, 'FitterStartRequested')
         end
         function onApplyFittedRequested(obj, ~, ~)
-            notify(obj, 'TyreModelApplyFittedRequested')
+            selection = obj.TyreParametersTable.SelectedParameterNames;
+            e = events.TyreModelApplyFittedParametersRequested(selection);
+            notify(obj, 'TyreModelApplyFittedRequested', e)
         end
         function onStructToMatRequested(obj, ~, ~)
             notify(obj, 'TyreModelStructToMatRequested')

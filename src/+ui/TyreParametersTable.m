@@ -3,6 +3,7 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
     properties (Access = public)
         Model MagicFormulaTyre
         FittedParameters magicformula.v61.Parameters = magicformula.v61.Parameters.empty
+        SelectedParameterNames cell = {}
     end
     
     properties (Access = private, Constant)
@@ -117,6 +118,15 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                 parameterName = char(data(row, obj.ColumnParameter));
                 model.Parameters.(parameterName).Max = parameterMax;
             end
+        end
+        function onCellSelection(obj, ~, event)
+            table = obj.Table.Data;
+            indices = event.Indices;
+            rows = unique(indices(:,1));
+            cols = obj.ColumnParameter;
+            names = table(rows, cols);
+            names = cellstr(names);
+            obj.SelectedParameterNames = names;
         end
         function onTyreModelChanged(obj, ~, event)
             model = event.Model;
@@ -354,7 +364,8 @@ classdef TyreParametersTable < matlab.ui.componentcontainer.ComponentContainer
                 'ColumnWidth', {120, 22, 100, 100, 70, 70, 'auto'}, ...
                 'ColumnEditable', logical([0, 1, 1, 0, 1, 1, 0]), ...
                 'ColumnSortable', logical([1, 1, 1, 1, 0, 0, 0]), ...
-                'CellEditCallback', @obj.onCellEdit);
+                'CellEditCallback', @obj.onCellEdit, ...
+                'CellSelectionCallback', @obj.onCellSelection);
             
             setupListeners(obj)
         end
