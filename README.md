@@ -18,6 +18,12 @@ This project uses the model functions provided by the
 You can export the model parameters to use with said library to simulate tyre behavior in
 MATLAB or create models suitable for code-generation in Simulink.
 
+## Why is this project archived?
+
+Since the private usage agreement of my corporate MATLAB license was rescinded, I don't have the possibility anymore to make changes to this project.
+As I still get issues on this project, I wanted to make people aware that I am not supporting it anymore.
+If you want to improve this project, feel free to fork it.
+
 ## Motivation
 
 This project originates in my work as a Formula Student member of
